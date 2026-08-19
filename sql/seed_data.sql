@@ -1,23 +1,11 @@
 USE covoiturage;
 
--- 1. Agences (12 villes)
-INSERT INTO agences (nom) VALUES
-('Paris'),
-('Lyon'),
-('Marseille'),
-('Toulouse'),
-('Nice'),
-('Nantes'),
-('Strasbourg'),
-('Montpellier'),
-('Bordeaux'),
-('Lille'),
-('Rennes'),
-('Reims');
+INSERT INTO agencies (name) VALUES
+('Paris'),('Lyon'),('Marseille'),('Toulouse'),('Nice'),('Nantes'),
+('Strasbourg'),('Montpellier'),('Bordeaux'),('Lille'),('Rennes'),('Reims');
 
--- 2. Employés (20 premiers = utilisateurs normaux)
--- Le hash SHA256 de 'secret' est : 2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b
-INSERT INTO employes (nom, prenom, telephone, email, mot_de_passe, est_admin) VALUES
+-- Mot de passe 'secret' hashé en SHA256
+INSERT INTO users (last_name, first_name, phone, email, password_hash, is_admin) VALUES
 ('Martin', 'Alexandre', '0612345678', 'alexandre.martin@email.fr', '2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b', 0),
 ('Dubois', 'Sophie', '0698765432', 'sophie.dubois@email.fr', '2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b', 0),
 ('Bernard', 'Julien', '0622446688', 'julien.bernard@email.fr', '2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b', 0),
@@ -39,30 +27,14 @@ INSERT INTO employes (nom, prenom, telephone, email, mot_de_passe, est_admin) VA
 ('Masson', 'Julie', '0733445566', 'julie.masson@email.fr', '2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b', 0),
 ('Henry', 'Arthur', '0666554433', 'arthur.henry@email.fr', '2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b', 0);
 
--- 3. Création d'un compte administrateur dédié (ID 21)
-INSERT INTO employes (nom, prenom, telephone, email, mot_de_passe, est_admin) VALUES
+-- Admin (id 21)
+INSERT INTO users (last_name, first_name, phone, email, password_hash, is_admin) VALUES
 ('Admin', 'Super', '0102030405', 'admin@covoiturage.fr', '2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b', 1);
 
--- 4. Trajets (avec des dates dans le futur)
--- On utilise des dates fixes (par exemple dans 10 jours) pour plus de simplicité.
--- Note : l'employe_id correspond aux IDs insérés ci-dessus (1 à 20).
-
--- Trajet 1 : Paris -> Lyon, le 2026-09-01 à 09:00, arrivée à 11:00
-INSERT INTO trajets (agence_depart_id, agence_arrivee_id, gdh_depart, gdh_arrivee, nb_places_total, nb_places_disponibles, employe_id)
-VALUES (1, 2, '2026-09-01 09:00:00', '2026-09-01 11:00:00', 3, 3, 2);
-
--- Trajet 2 : Lyon -> Marseille, le 2026-09-02 à 14:00, arrivée à 15:00
-INSERT INTO trajets (agence_depart_id, agence_arrivee_id, gdh_depart, gdh_arrivee, nb_places_total, nb_places_disponibles, employe_id)
-VALUES (2, 3, '2026-09-02 14:00:00', '2026-09-02 15:00:00', 4, 4, 3);
-
--- Trajet 3 : Paris -> Bordeaux, le 2026-09-03 à 08:00, arrivée à 11:00 (auteur = Alexandre Martin, id=1)
-INSERT INTO trajets (agence_depart_id, agence_arrivee_id, gdh_depart, gdh_arrivee, nb_places_total, nb_places_disponibles, employe_id)
-VALUES (1, 9, '2026-09-03 08:00:00', '2026-09-03 11:00:00', 2, 2, 1);
-
--- Trajet 4 : Lille -> Nantes, le 2026-09-04 à 10:00, arrivée à 14:00 (0 place disponible pour tester le filtre)
-INSERT INTO trajets (agence_depart_id, agence_arrivee_id, gdh_depart, gdh_arrivee, nb_places_total, nb_places_disponibles, employe_id)
-VALUES (10, 6, '2026-09-04 10:00:00', '2026-09-04 14:00:00', 3, 0, 4);
-
--- Trajet 5 : Toulouse -> Nice, le 2026-09-05 à 16:00, arrivée à 18:00
-INSERT INTO trajets (agence_depart_id, agence_arrivee_id, gdh_depart, gdh_arrivee, nb_places_total, nb_places_disponibles, employe_id)
-VALUES (4, 5, '2026-09-05 16:00:00', '2026-09-05 18:00:00', 5, 5, 5);
+-- Quelques trajets
+INSERT INTO trips (departure_agency_id, arrival_agency_id, departure_datetime, arrival_datetime, total_seats, available_seats, user_id) VALUES
+(1, 2, '2026-09-01 09:00:00', '2026-09-01 11:00:00', 3, 3, 2),
+(2, 3, '2026-09-02 14:00:00', '2026-09-02 15:00:00', 4, 4, 3),
+(1, 9, '2026-09-03 08:00:00', '2026-09-03 11:00:00', 2, 2, 1),
+(10, 6, '2026-09-04 10:00:00', '2026-09-04 14:00:00', 3, 0, 4),
+(4, 5, '2026-09-05 16:00:00', '2026-09-05 18:00:00', 5, 5, 5);
