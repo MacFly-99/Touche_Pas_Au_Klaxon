@@ -9,8 +9,8 @@
                     <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
                 <?php endif; ?>
 
-                <form method="POST" action="/auth/login">
-                    <div class="mb-3">
+                <form method="POST" action="<?= BASE_URL ?>/auth/login">
+                <div class="mb-3">
                         <label for="email" class="form-label">Email address</label>
                         <input type="email" class="form-control" id="email" name="email" required>
                     </div>
@@ -22,8 +22,8 @@
                 </form>
 
                 <div class="mt-3 text-center text-muted small">
-                    <p>Test user: alexandre.martin@email.fr<br>Password: secret</p>
-                    <p>Admin: admin@covoiturage.fr<br>Password: secret</p>
+                    <p>Test user: alexandre.martin@email.fr<br>Password: <strong>secret</strong></p>
+                    <p>Admin: admin@covoiturage.fr<br>Password: <strong>secret</strong></p>
                 </div>
             </div>
         </div>

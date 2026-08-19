@@ -17,6 +17,10 @@ class Controller
 
     protected function redirect($url)
     {
+        // Si l'URL ne commence pas par http:// ou https://, on ajoute BASE_URL
+        if (!preg_match('#^https?://#', $url)) {
+        $url = BASE_URL . $url;
+        }
         header('Location: ' . $url);
         exit;
     }
