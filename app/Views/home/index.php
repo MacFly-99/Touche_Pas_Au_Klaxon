@@ -1,16 +1,16 @@
-<h1>Available trips</h1>
+<h1>Trajets disponibles</h1>
 
 <?php if (empty($trips)): ?>
-    <div class="alert alert-info">No trips available at the moment.</div>
+    <div class="alert alert-info">Aucun trajet disponible pour le moment.</div>
 <?php else: ?>
     <table class="table table-striped table-hover">
         <thead>
             <tr>
-                <th>Departure</th>
-                <th>Departure date</th>
-                <th>Arrival</th>
-                <th>Arrival date</th>
-                <th>Available seats</th>
+                <th>Départ</th>
+                <th>Date de départ</th>
+                <th>Arrivée</th>
+                <th>Date d'arrivée</th>
+                <th>Places disponibles</th>
             </tr>
         </thead>
         <tbody>

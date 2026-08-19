@@ -9,7 +9,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #00497c;">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">Don't touch the horn</a>
+        <a class="navbar-brand" href="/">Touche Pas Au Klaxon</a>
         <div class="d-flex align-items-center">
             <?php if (isset($_SESSION['user'])): ?>
                 <?php if ($_SESSION['user']['is_admin'] == 1): ?>
@@ -27,9 +27,9 @@
                         <?= htmlspecialchars($_SESSION['user']['first_name'] . ' ' . $_SESSION['user']['last_name']) ?>
                     </span>
                 <?php endif; ?>
-                <a href="/auth/logout" class="btn btn-danger">Logout</a>
+                <a href="/auth/logout" class="btn btn-danger">Déconnexion</a>
             <?php else: ?>
-                <a href="/auth/login" class="btn btn-primary">Login</a>
+                <a href="/auth/login" class="btn btn-primary">Connexion</a>
             <?php endif; ?>
         </div>
     </div>
