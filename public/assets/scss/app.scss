@@ -1,5 +1,5 @@
 // Importer Bootstrap
-@import "../../node_modules/bootstrap/scss/bootstrap";
+@import "../../../node_modules/bootstrap/scss/bootstrap";
 
 // Palette de couleurs imposée
 $primary: #0074c7;
@@ -20,7 +20,7 @@ $theme-colors: (
 );
 
 // Réimportation pour prendre en compte les nouvelles couleurs
-@import "../../node_modules/bootstrap/scss/bootstrap";
+@import "../../../node_modules/bootstrap/scss/bootstrap";
 
 // Styles personnalisés
 body {
