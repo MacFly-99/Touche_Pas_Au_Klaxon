@@ -102,6 +102,22 @@ class TripController extends Controller
 
         $this->redirect('/');
     }
+
+    public function details($id)
+    {
+        $tripModel = new Trip();
+        $trip = $tripModel->findById($id);
+        
+        if ($trip) {
+            // Retourne les données en JSON
+            header('Content-Type: application/json');
+            echo json_encode($trip);
+        } else {
+            http_response_code(404);
+            echo json_encode(['error' => 'Trip not found']);
+        }
+        exit;
+    }
 }
 
 ?>
