@@ -25,12 +25,17 @@
                         <td><?= $trip['available_seats'] ?></td>
                         <td>
                             <!-- Bouton Détails -->
-                            <button type="button" class="btn btn-info btn-sm" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#detailsModal"
-                                    data-trip-id="<?= $trip['id'] ?>">
-                                Details
+                             <button type="button" class="btn btn-info btn-sm" 
+                             data-bs-toggle="modal" 
+                             data-bs-target="#detailsModal"
+                             data-trip-id="<?= $trip['id'] ?>">
+                             Details
                             </button>
+                            
+                            <!-- Bouton Modifier (uniquement pour l'auteur) -->
+                             <?php if (isset($_SESSION['user']) && $_SESSION['user']['id'] == $trip['user_id']): ?>
+                                <a href="<?= BASE_URL ?>/trip/edit/<?= $trip['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
+                                <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
