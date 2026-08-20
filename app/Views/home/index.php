@@ -36,6 +36,20 @@
                              <?php if (isset($_SESSION['user']) && $_SESSION['user']['id'] == $trip['user_id']): ?>
                                 <a href="<?= BASE_URL ?>/trip/edit/<?= $trip['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
                                 <?php endif; ?>
+
+                            <!-- Bouton Supprimer avec modale (auteur OU administrateur) -->
+                             <?php 
+                             $isAuthor = isset($_SESSION['user']) && $_SESSION['user']['id'] == $trip['user_id'];
+                             $isAdmin = isset($_SESSION['user']) && $_SESSION['user']['is_admin'] == 1;
+                             if ($isAuthor || $isAdmin): 
+                             ?>
+                             <button type="button" class="btn btn-danger btn-sm" 
+                             data-bs-toggle="modal" 
+                             data-bs-target="#deleteModal"
+                             data-trip-id="<?= $trip['id'] ?>">
+                             Delete
+                            </button>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -62,6 +76,28 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this trip?</p>
+                <p class="text-danger fw-bold">⚠️ This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
             </div>
         </div>
     </div>
@@ -139,6 +175,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     modalBody.innerHTML = `<div class="alert alert-danger">Error loading trip details.</div>`;
                     console.error('Error:', error);
                 });
+        });
+    });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Récupérer tous les boutons "Delete" qui ouvrent la modale
+    const deleteButtons = document.querySelectorAll('[data-bs-toggle="modal"][data-bs-target="#deleteModal"]');
+    const deleteForm = document.getElementById('deleteForm');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Récupérer l'ID du trajet depuis l'attribut data-trip-id
+            const tripId = this.getAttribute('data-trip-id');
+            // Mettre à jour l'action du formulaire avec l'ID du trajet
+            deleteForm.action = '<?= BASE_URL ?>/trip/delete/' + tripId;
         });
     });
 });

@@ -250,6 +250,51 @@ class TripController extends Controller
 
         $this->redirect('/');
     }
+
+    // Affiche une boîte de dialogue pour la suppression d'un trajet
+    public function delete($id)
+    {
+        // Vérifier que l'utilisateur est connecté
+        if (!isset($_SESSION['user'])) {
+            $this->redirect('/auth/login');
+            return;
+        }
+
+        // Vérifier que c'est une requête POST
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/');
+            return;
+        }
+
+        $tripModel = new Trip();
+        $trip = $tripModel->findById($id);
+
+        // Vérifier que le trajet existe
+        if (!$trip) {
+            $_SESSION['flash']['error'] = "Trip not found.";
+            $this->redirect('/');
+            return;
+        }
+
+        // Vérifier les droits : auteur OU administrateur
+        $isAuthor = ($trip['user_id'] == $_SESSION['user']['id']);
+        $isAdmin = isset($_SESSION['user']['is_admin']) && $_SESSION['user']['is_admin'] == 1;
+
+        if (!$isAuthor && !$isAdmin) {
+            $_SESSION['flash']['error'] = "You are not authorized to delete this trip.";
+            $this->redirect('/');
+            return;
+        }
+
+        // Supprimer le trajet
+        if ($tripModel->delete($id)) {
+            $_SESSION['flash']['success'] = "Trip deleted successfully!";
+        } else {
+            $_SESSION['flash']['error'] = "Error deleting trip. Please try again.";
+        }
+
+        $this->redirect('/');
+    }
 }
 
 ?>
