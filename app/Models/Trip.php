@@ -89,6 +89,24 @@ class Trip extends Model
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$id]);
     }
+
+    public function findAllForAdmin()
+    {
+        $sql = "SELECT t.*, 
+                    da.name as departure_name, 
+                    aa.name as arrival_name,
+                    u.first_name as author_first_name,
+                    u.last_name as author_last_name,
+                    u.email as author_email
+                FROM trips t
+                INNER JOIN agencies da ON t.departure_agency_id = da.id
+                INNER JOIN agencies aa ON t.arrival_agency_id = aa.id
+                INNER JOIN users u ON t.user_id = u.id
+                ORDER BY t.departure_datetime DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }
 
 ?>

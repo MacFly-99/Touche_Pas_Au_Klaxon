@@ -23,6 +23,13 @@ class User extends Model
         }
         return false;
     }
+
+    public function findAll()
+    {
+        $sql = "SELECT * FROM users ORDER BY last_name, first_name";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }
 
 ?>
