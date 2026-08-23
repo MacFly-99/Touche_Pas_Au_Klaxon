@@ -1,0 +1,16 @@
+{
+  "name": "covoiturage",
+  "version": "1.0.0",
+  "description": "Application de covoiturage",
+  "main": "index.js",
+  "scripts": {
+    "watch": "sass --watch public/assets/scss/app.scss public/assets/css/app.css",
+    "build": "sass public/assets/scss/app.scss public/assets/css/app.css --style=compressed"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.0"
+  },
+  "devDependencies": {
+    "sass": "^1.63.0"
+  }
+}
