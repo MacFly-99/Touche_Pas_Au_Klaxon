@@ -1,1 +1,31 @@
-/vendor/
+# Dossiers de dépendances (générés par Composer et npm)
+vendor/
+node_modules/
+
+# Fichiers de lock (optionnels – on les garde souvent en versionnement)
+# composer.lock
+# package-lock.json
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Fichiers temporaires
+*.tmp
+*.log
+*.cache
+
+# Configuration IDE
+.vscode/
+.idea/
+
+# Fichiers de build
+public/assets/css/
+public/assets/js/
+*.min.css
+*.min.js
+
+# Fichiers de test locaux (surtout ne pas versionner)
+phpunit.xml
+.phpunit.cache
+.phpstan.cache
