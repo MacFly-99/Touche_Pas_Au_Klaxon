@@ -11,6 +11,9 @@ class Model
     {
         $this->db = Database::getInstance();
     }
-}
 
-?>
+    public function getDb()
+    {
+        return $this->db;
+    }
+}
