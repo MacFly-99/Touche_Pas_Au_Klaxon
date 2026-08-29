@@ -1,13 +1,13 @@
-<h1>Agencies management</h1>
+<h1>Gestion des agences</h1>
 
-<a href="<?= BASE_URL ?>/admin/agencyCreate" class="btn btn-primary mb-3">Add agency</a>
+<a href="<?= BASE_URL ?>/admin/agencyCreate" class="btn btn-primary mb-3">Ajouter une agence</a>
 
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Name</th>
+                <th>Nom</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -17,13 +17,13 @@
                     <td><?= $agency['id'] ?></td>
                     <td><?= htmlspecialchars($agency['name']) ?></td>
                     <td>
-                        <a href="<?= BASE_URL ?>/admin/agencyEdit/<?= $agency['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="<?= BASE_URL ?>/admin/agencyEdit/<?= $agency['id'] ?>" class="btn btn-warning btn-sm">Modifier</a>
                         <button type="button" class="btn btn-danger btn-sm" 
                         data-bs-toggle="modal" 
                         data-bs-target="#deleteAgencyModal"
                         data-agency-id="<?= $agency['id'] ?>"
                         data-agency-name="<?= htmlspecialchars($agency['name']) ?>">
-                        Delete
+                        Supprimer
                         </button>
                     </td>
                 </tr>
@@ -36,18 +36,18 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="deleteAgencyModalLabel">Confirm deletion</h5>
+                    <h5 class="modal-title" id="deleteAgencyModalLabel">Confirmer la suppression</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete the agency <strong id="agencyNameDisplay"></strong>?</p>
-                    <p class="text-danger fw-bold">⚠️ This action cannot be undone.</p>
-                    <p>All trips associated with this agency will also be deleted.</p>
+                    <p>Êtes-vous sûr de vouloir supprimer cette agence <strong id="agencyNameDisplay"></strong>?</p>
+                    <p class="text-danger fw-bold">⚠️ Cette action ne peut pas être annulée.</p>
+                    <p>Tous les trajets associés à cette agence seront aussi supprimés.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                     <form id="deleteAgencyForm" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-danger">Delete</button>
+                        <button type="submit" class="btn btn-danger">Supprimer</button>
                     </form>
                 </div>
             </div>

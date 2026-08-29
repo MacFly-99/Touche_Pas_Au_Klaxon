@@ -1,0 +1,54 @@
+=======================================
+MODELE LOGIQUE DE DONNEES (MLD)
+=======================================
+
+TABLE agencies
+
+id (INT, PRIMARY KEY, AUTO_INCREMENT)
+
+name (VARCHAR(100), NOT NULL, UNIQUE)
+
+
+TABLE users
+
+id (INT, PRIMARY KEY, AUTO_INCREMENT)
+
+last_name (VARCHAR(50), NOT NULL)
+
+first_name (VARCHAR(50), NOT NULL)
+
+phone (VARCHAR(20), NOT NULL)
+
+email (VARCHAR(100), NOT NULL, UNIQUE)
+
+password_hash (VARCHAR(255), NOT NULL)
+
+is_admin (TINYINT(1), DEFAULT 0)
+
+
+TABLE trips
+
+id (INT, PRIMARY KEY, AUTO_INCREMENT)
+
+departure_agency_id (INT, NOT NULL)
+
+arrival_agency_id (INT, NOT NULL)
+
+departure_datetime (DATETIME, NOT NULL)
+
+arrival_datetime (DATETIME, NOT NULL)
+
+total_seats (INT, NOT NULL)
+
+available_seats (INT, NOT NULL)
+
+user_id (INT, NOT NULL)
+
+
+CONTRAINTES D'INTEGRITE (Clés étrangères)
+
+trips.departure_agency_id REFERENCES agencies(id) ON DELETE CASCADE
+
+trips.arrival_agency_id REFERENCES agencies(id) ON DELETE CASCADE
+
+trips.user_id REFERENCES users(id) ON DELETE CASCADE

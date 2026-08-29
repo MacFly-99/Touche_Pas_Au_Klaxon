@@ -1,17 +1,17 @@
-<h1>Available trips</h1>
+<h1>Trajets disponibles</h1>
 
 <?php if (empty($trips)): ?>
-    <div class="alert alert-info">No trips available at the moment.</div>
+    <div class="alert alert-info">Aucnun trajet disponible pour le moment.</div>
 <?php else: ?>
     <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th>Departure</th>
-                    <th>Departure date</th>
-                    <th>Arrival</th>
-                    <th>Arrival date</th>
-                    <th>Available seats</th>
+                    <th>Départ</th>
+                    <th>Date de départ</th>
+                    <th>Arrivée</th>
+                    <th>Date d'arrivée</th>
+                    <th>Places disponibles</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -29,12 +29,12 @@
                              data-bs-toggle="modal" 
                              data-bs-target="#detailsModal"
                              data-trip-id="<?= $trip['id'] ?>">
-                             Details
+                             Détails
                             </button>
                             
                             <!-- Bouton Modifier (uniquement pour l'auteur) -->
                              <?php if (isset($_SESSION['user']) && $_SESSION['user']['id'] == $trip['user_id']): ?>
-                                <a href="<?= BASE_URL ?>/trip/edit/<?= $trip['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
+                                <a href="<?= BASE_URL ?>/trip/edit/<?= $trip['id'] ?>" class="btn btn-warning btn-sm">Modifier</a>
                                 <?php endif; ?>
 
                             <!-- Bouton Supprimer avec modale (auteur OU administrateur) -->
@@ -47,7 +47,7 @@
                              data-bs-toggle="modal" 
                              data-bs-target="#deleteModal"
                              data-trip-id="<?= $trip['id'] ?>">
-                             Delete
+                             Supprimer
                             </button>
                             <?php endif; ?>
                         </td>
@@ -63,19 +63,19 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="detailsModalLabel">Trip details</h5>
+                <h5 class="modal-title" id="detailsModalLabel">Détails du trajet</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="detailsModalBody">
                 <!-- Le contenu sera chargé dynamiquement en AJAX -->
                 <div class="text-center">
                     <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                        <span class="visually-hidden">Chargement...</span>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
             </div>
         </div>
     </div>
@@ -86,17 +86,17 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="deleteModalLabel">Confirm deletion</h5>
+                <h5 class="modal-title" id="deleteModalLabel">Confirmer la suppression</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete this trip?</p>
-                <p class="text-danger fw-bold">⚠️ This action cannot be undone.</p>
+                <p>Êtes-vous sûr de vouloir supprimer ce trajet ?</p>
+                <p class="text-danger fw-bold">⚠️ Cette action ne peut pas être annulée.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                 <form id="deleteForm" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
                 </form>
             </div>
         </div>
@@ -134,11 +134,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Afficher les détails dans la modale
                     modalBody.innerHTML = `
                         <div class="row mb-2">
-                            <div class="col-4 fw-bold">Author:</div>
+                            <div class="col-4 fw-bold">Auteur:</div>
                             <div class="col-8">${data.author_first_name} ${data.author_last_name}</div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-4 fw-bold">Phone:</div>
+                            <div class="col-4 fw-bold">Téléphone:</div>
                             <div class="col-8">${data.author_phone}</div>
                         </div>
                         <div class="row mb-2">
@@ -146,27 +146,27 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="col-8">${data.author_email}</div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-4 fw-bold">Departure:</div>
+                            <div class="col-4 fw-bold">Agence départ:</div>
                             <div class="col-8">${data.departure_name}</div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-4 fw-bold">Departure date:</div>
+                            <div class="col-4 fw-bold">Date et heure départ:</div>
                             <div class="col-8">${new Date(data.departure_datetime).toLocaleString('fr-FR')}</div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-4 fw-bold">Arrival:</div>
+                            <div class="col-4 fw-bold">Agence arrivée:</div>
                             <div class="col-8">${data.arrival_name}</div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-4 fw-bold">Arrival date:</div>
+                            <div class="col-4 fw-bold">Date et heure arrivée:</div>
                             <div class="col-8">${new Date(data.arrival_datetime).toLocaleString('fr-FR')}</div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-4 fw-bold">Total seats:</div>
+                            <div class="col-4 fw-bold">Places totales:</div>
                             <div class="col-8">${data.total_seats}</div>
                         </div>
                         <div class="row mb-2">
-                            <div class="col-4 fw-bold">Available seats:</div>
+                            <div class="col-4 fw-bold">Places disponibles:</div>
                             <div class="col-8">${data.available_seats}</div>
                         </div>
                     `;
