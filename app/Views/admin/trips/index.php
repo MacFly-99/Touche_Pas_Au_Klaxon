@@ -1,17 +1,17 @@
-<h1>All trips (admin view)</h1>
+<h1>Tous les Trajets (côté admin)</h1>
 
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Departure</th>
-                <th>Arrival</th>
-                <th>Departure datetime</th>
-                <th>Arrival datetime</th>
-                <th>Seats total</th>
-                <th>Seats avail.</th>
-                <th>Author</th>
+                <th>Départ</th>
+                <th>Arrivée</th>
+                <th>Jour et heure de départ</th>
+                <th>Jour et heure d'arrivée</th>
+                <th>Places totales</th>
+                <th>Places disponibles</th>
+                <th>Auteur</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -31,7 +31,7 @@
                         data-bs-toggle="modal" 
                         data-bs-target="#deleteTripModal"
                         data-trip-id="<?= $trip['id'] ?>">
-                        Delete
+                        Supprimer
                         </button>
                 </td>
                 </tr>
@@ -44,17 +44,17 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="deleteTripModalLabel">Confirm deletion</h5>
+                    <h5 class="modal-title" id="deleteTripModalLabel">Confirmer la suppression</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete this trip?</p>
-                    <p class="text-danger fw-bold">⚠️ This action cannot be undone.</p>
+                    <p>Êtes-vous sûr de vouloir supprimer ce trajet ?</p>
+                    <p class="text-danger fw-bold">⚠️ Cette action ne peut pas être annulée.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                     <form id="deleteTripForm" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-danger">Delete</button>
+                        <button type="submit" class="btn btn-danger">Supprimer</button>
                     </form>
                 </div>
             </div>
