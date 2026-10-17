@@ -1,7 +1,7 @@
 <h1>Trajets disponibles</h1>
 
 <?php if (empty($trips)): ?>
-    <div class="alert alert-info">Aucnun trajet disponible pour le moment.</div>
+    <div class="alert alert-info">Aucun trajet disponible pour le moment.</div>
 <?php else: ?>
     <div class="table-responsive">
         <table class="table table-striped table-hover">

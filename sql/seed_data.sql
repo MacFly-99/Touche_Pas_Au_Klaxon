@@ -29,12 +29,12 @@ INSERT INTO users (last_name, first_name, phone, email, password_hash, is_admin)
 
 -- Admin (id 21)
 INSERT INTO users (last_name, first_name, phone, email, password_hash, is_admin) VALUES
-('Admin', 'Super', '0102030405', 'admin@covoiturage.fr', '2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b', 1);
+('Admin', '0102030405', 'admin@covoiturage.fr', '2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b', 1);
 
 -- Quelques trajets
 INSERT INTO trips (departure_agency_id, arrival_agency_id, departure_datetime, arrival_datetime, total_seats, available_seats, user_id) VALUES
-(1, 2, '2026-09-01 09:00:00', '2026-09-01 11:00:00', 3, 3, 2),
-(2, 3, '2026-09-02 14:00:00', '2026-09-02 15:00:00', 4, 4, 3),
-(1, 9, '2026-09-03 08:00:00', '2026-09-03 11:00:00', 2, 2, 1),
-(10, 6, '2026-09-04 10:00:00', '2026-09-04 14:00:00', 3, 0, 4),
-(4, 5, '2026-09-05 16:00:00', '2026-09-05 18:00:00', 5, 5, 5);
+(1, 2, '2026-11-01 09:00:00', '2026-11-01 11:00:00', 3, 3, 2),
+(2, 3, '2026-11-02 14:00:00', '2026-11-02 15:00:00', 4, 4, 3),
+(1, 9, '2026-11-03 08:00:00', '2026-11-03 11:00:00', 2, 2, 1),
+(10, 6, '2026-11-04 10:00:00', '2026-11-04 14:00:00', 3, 0, 4),
+(4, 5, '2026-11-05 16:00:00', '2026-11-05 18:00:00', 5, 5, 5);

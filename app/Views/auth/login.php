@@ -20,11 +20,6 @@
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Se connecter</button>
                 </form>
-
-                <div class="mt-3 text-center text-muted small">
-                    <p>Utilisateur test: alexandre.martin@email.fr<br>Mot de passe: <strong>secret</strong></p>
-                    <p>Admin: admin@covoiturage.fr<br>Mot de passe: <strong>secret</strong></p>
-                </div>
             </div>
         </div>
     </div>
