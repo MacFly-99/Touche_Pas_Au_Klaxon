@@ -1,10 +1,13 @@
 # 🚗 Touche pas au klaxon – Application de covoiturage intranet
 
+---
+
 ## 📋 Description
 
-Application web de covoiturage interne développée en PHP (architecture MVC) pour une entreprise multi-sites.
+Application web de covoiturage interne développée en **PHP** (architecture **MVC**) pour une entreprise multi-sites.
 
-**Fonctionnalités :**
+### ✨ Fonctionnalités
+
 - Consultation des trajets disponibles (sans connexion)
 - Connexion / Déconnexion (email + mot de passe)
 - Création, modification et suppression d'un trajet (pour l'auteur)
@@ -18,52 +21,75 @@ Application web de covoiturage interne développée en PHP (architecture MVC) po
 
 ## 🛠️ Installation
 
-### Prérequis
+### 📌 Prérequis
+
 - XAMPP (Apache + MySQL)
 - PHP 7.4 ou supérieur
 - Composer
 - Node.js (npm)
 
-### 1. Cloner le projet
+### 🔧 Étapes
+
+#### 1️⃣ Cloner le projet
+
+Dans le dossier `htdocs` de XAMPP :
+
 ```bash
-git clone https://github.com/votre-utilisateur/Touche_Pas_Au_Klaxon.git
+git clone https://github.com/votre-utilisateur/Touche_Pas_Au_Klaxon.git covoiturage
+```
 
-2. Démarrer XAMPP
-Lancer Apache et MySQL depuis le panneau de contrôle XAMPP.
+#### 2️⃣ Démarrer XAMPP
 
-3. Base de données
-Ouvrir phpMyAdmin : http://localhost/phpmyadmin
+Lancer **Apache** et **MySQL** depuis le panneau de contrôle XAMPP.
 
-Importer sql/create_database.sql puis sql/seed_data.sql
+#### 3️⃣ Base de données
 
-4. Installer les dépendances PHP
+Ouvrir phpMyAdmin : <http://localhost/phpmyadmin>
+
+Importer `sql/create_database.sql` puis `sql/seed_data.sql`.
+
+#### 4️⃣ Installer les dépendances PHP
+
+```bash
 composer install
+```
 
-5. Installer les dépendances front-end (Bootstrap, Sass)
+#### 5️⃣ Installer les dépendances front-end (Bootstrap, Sass)
+
+```bash
 npm install
+```
 
-6. Compiler le Sass (optionnel – on utilise le CDN)
+#### 6️⃣ Compiler le Sass *(optionnel – on utilise le CDN)*
+
+```bash
 npm run build
+```
 
-7. Configurer l'URL de base
-Ouvrir public/index.php
-Vérifier que BASE_URL est bien définie :
+#### 7️⃣ Configurer l'URL de base
 
+Ouvrir `public/index.php` et vérifier que `BASE_URL` est bien définie :
+
+```php
 define('BASE_URL', '/covoiturage/public');
+```
 
-8. Accéder à l'application
-Ouvrir un navigateur : http://localhost/covoiturage/public/
+#### 8️⃣ Accéder à l'application
 
+Ouvrir un navigateur : <http://localhost/covoiturage/public/>
 
-🔐 Identifiants de test
+### 🔐 Identifiants de test
 
-Rôle	        Email	                    Mot de passe
-Utilisateur	    alexandre.martin@email.fr	secret
-Administrateur	admin@covoiturage.fr	    secret
+| Rôle              | Email                      | Mot de passe |
+| ----------------- | -------------------------- | ------------ |
+| 👤 Utilisateur     | alexandre.martin@email.fr  | secret       |
+| 👑 Administrateur  | admin@covoiturage.fr       | secret       |
 
+---
 
-📁 Structure du projet
+## 📁 Structure du projet
 
+```text
 covoiturage/
 ├── app/
 │   ├── Config/          # Configuration (base de données)
@@ -87,56 +113,74 @@ covoiturage/
 ├── phpunit.xml
 ├── README.md
 └── .htaccess
+```
 
+---
 
-🧪 Exécuter les tests
+## 🧪 Tests
 
+Les tests unitaires sont réalisés avec **PHPUnit**.
+
+### ▶️ Exécuter les tests
+
+```bash
 vendor/bin/phpunit
+```
+
 Tous les tests doivent passer avec succès.
 
+### ✅ Résultat attendu
 
-🖥️ Technologies utilisées
+| Tests | Assertions | Statut |
+| :---: | :--------: | :----: |
+| 14    | 50         | ✅ OK  |
 
-PHP (Back-end – architecture MVC)
+---
 
-MySQL / MariaDB (Base de données)
+## 💻 Technologies utilisées
 
-Bootstrap 5 (Interface utilisateur – CDN)
+| Technologie        | Rôle                                         |
+| ------------------ | -------------------------------------------- |
+| **PHP**            | Back-end (architecture MVC)                  |
+| **MySQL / MariaDB** | Base de données                             |
+| **Bootstrap 5**    | Interface utilisateur (CDN)                  |
+| **Sass**           | Gestion des couleurs imposées (optionnel)    |
+| **PHPUnit**        | Tests unitaires                              |
+| **Composer**       | Gestionnaire de paquets PHP                  |
+| **npm**            | Gestionnaire de paquets JavaScript           |
 
-Sass (Gestion des couleurs imposées – optionnel)
+---
 
-PHPUnit (Tests unitaires)
+## 📊 Modèle de données
 
-Composer (Gestionnaire de paquets PHP)
+### MCD (Modèle Conceptuel de Données)
 
-npm (Gestionnaire de paquets JavaScript)
+Fichier présent au format PNG dans le dossier `sql` de l'application : `MCD.png`
 
+### MLD (Modèle Logique de Données)
 
-📊 Modèle de données
+Fichier présent au format TXT dans le dossier `sql` de l'application : `MLD.txt`
 
-MCD (Modèle Conceptuel de Données)
-Fichier présent au format PNG dans le dossier sql de l'application : MCD.png
-
-
-MLD (Modèle Logique de Données)
-Fichier présent au format TXT dans le dossier sql de l'application : MLD.txt
-
+```text
 agencies (id, name)
 users (id, last_name, first_name, phone, email, password_hash, is_admin)
 trips (id, departure_agency_id, arrival_agency_id, departure_datetime, arrival_datetime, total_seats, available_seats, user_id)
+```
 
-Clés étrangères :
+### 🔗 Clés étrangères
 
-trips.departure_agency_id -> agencies.id
-trips.arrival_agency_id -> agencies.id
-trips.user_id -> users.id
+- `trips.departure_agency_id` → `agencies.id`
+- `trips.arrival_agency_id` → `agencies.id`
+- `trips.user_id` → `users.id`
 
+---
 
-👨‍💻 Auteur
+## 🧑‍💻 Auteur
 
-Développé par Mattéo Ventura dans le cadre d'un projet CEF – MVC PHP.
+Développé par **Mattéo Ventura** dans le cadre d'un projet CEF – MVC PHP.
 
+---
 
-📝 Licence
+## 📝 Licence
 
 Projet propriétaire – usage interne uniquement.
