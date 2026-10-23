@@ -40,6 +40,8 @@ class AdminController extends Controller
             return;
         }
 
+            $this->verifyCsrfToken(); 
+
         // Empêcher l'admin de supprimer son propre compte
         if (isset($_SESSION['user']['id']) && $id == $_SESSION['user']['id']) {
             $_SESSION['flash']['error'] = "Vous ne pouvez pas supprimer votre propre compte.";

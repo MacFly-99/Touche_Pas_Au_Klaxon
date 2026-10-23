@@ -1,6 +1,7 @@
 <h1>Créer une agence</h1>
 
 <form method="POST" action="<?= BASE_URL ?>/admin/agencyStore">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
     <div class="mb-3">
         <label for="name" class="form-label">Nom de l'agence</label>
         <input type="text" class="form-control" id="name" name="name" required>

@@ -1,0 +1,13 @@
+# 1. Rediriger tout le trafic vers le dossier public
+RewriteEngine On
+RewriteRule ^$ public/ [L]
+RewriteRule (.*) public/$1 [L]
+
+# 2. Bloquer l'accès direct aux dossiers et fichiers sensibles
+# (Empêche un utilisateur de taper localhost/covoiturage/.env ou localhost/covoiturage/app/Config/Database.php)
+RedirectMatch 403 ^/app/.*$
+RedirectMatch 403 ^/sql/.*$
+RedirectMatch 403 ^/tests/.*$
+RedirectMatch 403 ^/vendor/.*$
+RedirectMatch 403 ^/\.env$
+RedirectMatch 403 ^/\.git/.*$

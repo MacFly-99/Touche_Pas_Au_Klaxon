@@ -10,7 +10,6 @@ class TripController extends Controller
     // Affiche le formulaire de création
     public function create()
     {
-        // Vérifier que l'utilisateur est connecté
         if (!isset($_SESSION['user'])) {
             $this->redirect('/auth/login');
             return;
@@ -28,49 +27,51 @@ class TripController extends Controller
     // Traite le formulaire (insertion en base)
     public function store()
     {
-        // Vérifier que l'utilisateur est connecté
         if (!isset($_SESSION['user'])) {
             $this->redirect('/auth/login');
             return;
         }
 
-        // Vérifier que c'est une requête POST
+        // 1. Vérification de la méthode POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/');
             return;
         }
 
+        // 2. VÉRIFICATION CSRF
+        $this->verifyCsrfToken();
+
         // Récupération des données du formulaire
-        $departureAgency = (int)$_POST['departure_agency'];
-        $arrivalAgency = (int)$_POST['arrival_agency'];
-        $departureDatetime = $_POST['departure_datetime'] . ' ' . $_POST['departure_time'];
-        $arrivalDatetime = $_POST['arrival_datetime'] . ' ' . $_POST['arrival_time'];
-        $totalSeats = (int)$_POST['total_seats'];
+        $departureAgency = (int)($_POST['departure_agency'] ?? 0);
+        $arrivalAgency = (int)($_POST['arrival_agency'] ?? 0);
+        $departureDate = $_POST['departure_datetime'] ?? '';
+        $departureTime = $_POST['departure_time'] ?? '';
+        $arrivalDate = $_POST['arrival_datetime'] ?? '';
+        $arrivalTime = $_POST['arrival_time'] ?? '';
+        $totalSeats = (int)($_POST['total_seats'] ?? 0);
+
+        $departureDatetime = $departureDate . ' ' . $departureTime;
+        $arrivalDatetime = $arrivalDate . ' ' . $arrivalTime;
 
         // --- Validation ---
         $errors = [];
 
-        // 1. Départ et arrivée doivent être différents
         if ($departureAgency === $arrivalAgency) {
-            $errors[] = "Departure and arrival agencies must be different.";
+            $errors[] = "Les agences de départ et d'arrivée doivent être différentes.";
         }
 
-        // 2. La date d'arrivée doit être postérieure à la date de départ
         if (strtotime($departureDatetime) >= strtotime($arrivalDatetime)) {
-            $errors[] = "Arrival date/time must be after departure date/time.";
+            $errors[] = "La date d'arrivée doit être postérieure à la date de départ.";
         }
 
-        // 3. Le nombre de places doit être > 0
         if ($totalSeats < 1) {
-            $errors[] = "Total seats must be at least 1.";
+            $errors[] = "Le nombre de places doit être d'au moins 1.";
         }
 
-        // 4. Vérifier que la date de départ n'est pas dans le passé
         if (strtotime($departureDatetime) < time()) {
-            $errors[] = "Departure date/time cannot be in the past.";
+            $errors[] = "La date de départ ne peut pas être dans le passé.";
         }
 
-        // Si des erreurs, on retourne au formulaire avec les messages
         if (!empty($errors)) {
             $agencyModel = new Agency();
             $agencies = $agencyModel->findAll();
@@ -78,7 +79,7 @@ class TripController extends Controller
                 'agencies' => $agencies,
                 'user' => $_SESSION['user'],
                 'errors' => $errors,
-                'old' => $_POST // pour pré-remplir les champs
+                'old' => $_POST
             ]);
             return;
         }
@@ -91,30 +92,39 @@ class TripController extends Controller
             'departure_datetime' => $departureDatetime,
             'arrival_datetime' => $arrivalDatetime,
             'total_seats' => $totalSeats,
+            'available_seats' => $totalSeats, // Initialement, toutes les places sont dispos
             'user_id' => $_SESSION['user']['id']
         ];
 
         if ($tripModel->insert($data)) {
-            $_SESSION['flash']['success'] = "Trip created successfully!";
+            $_SESSION['flash']['success'] = "Trajet créé avec succès !";
         } else {
-            $_SESSION['flash']['error'] = "Error creating trip. Please try again.";
+            $_SESSION['flash']['error'] = "Erreur lors de la création du trajet.";
         }
 
         $this->redirect('/');
     }
 
+    // Affiche les détails (Appel AJAX pour la modale)
     public function details($id)
     {
         $tripModel = new Trip();
         $trip = $tripModel->findById($id);
         
         if ($trip) {
-            // Retourne les données en JSON
+            // On échappe les données texte avant de les envoyer au JS
+            $trip['author_first_name'] = htmlspecialchars($trip['author_first_name'] ?? '', ENT_QUOTES, 'UTF-8');
+            $trip['author_last_name']  = htmlspecialchars($trip['author_last_name'] ?? '', ENT_QUOTES, 'UTF-8');
+            $trip['author_phone']      = htmlspecialchars($trip['author_phone'] ?? '', ENT_QUOTES, 'UTF-8');
+            $trip['author_email']      = htmlspecialchars($trip['author_email'] ?? '', ENT_QUOTES, 'UTF-8');
+            $trip['departure_name']    = htmlspecialchars($trip['departure_name'] ?? '', ENT_QUOTES, 'UTF-8');
+            $trip['arrival_name']      = htmlspecialchars($trip['arrival_name'] ?? '', ENT_QUOTES, 'UTF-8');
+
             header('Content-Type: application/json');
             echo json_encode($trip);
         } else {
             http_response_code(404);
-            echo json_encode(['error' => 'Trip not found']);
+            echo json_encode(['error' => 'Trajet introuvable']);
         }
         exit;
     }
@@ -122,7 +132,6 @@ class TripController extends Controller
     // Affiche le formulaire de modification
     public function edit($id)
     {
-        // Vérifier que l'utilisateur est connecté
         if (!isset($_SESSION['user'])) {
             $this->redirect('/auth/login');
             return;
@@ -131,21 +140,18 @@ class TripController extends Controller
         $tripModel = new Trip();
         $trip = $tripModel->findById($id);
 
-        // Vérifier que le trajet existe
         if (!$trip) {
-            $_SESSION['flash']['error'] = "Trip not found.";
+            $_SESSION['flash']['error'] = "Trajet introuvable.";
             $this->redirect('/');
             return;
         }
 
-        // Vérifier que l'utilisateur est l'auteur du trajet
         if ($trip['user_id'] != $_SESSION['user']['id']) {
-            $_SESSION['flash']['error'] = "You are not authorized to edit this trip.";
+            $_SESSION['flash']['error'] = "Vous n'êtes pas l'auteur de ce trajet.";
             $this->redirect('/');
             return;
         }
 
-        // Récupérer la liste des agences pour le formulaire
         $agencyModel = new Agency();
         $agencies = $agencyModel->findAll();
 
@@ -159,66 +165,59 @@ class TripController extends Controller
     // Traite le formulaire de modification
     public function update($id)
     {
-        // Vérifier que l'utilisateur est connecté
         if (!isset($_SESSION['user'])) {
             $this->redirect('/auth/login');
             return;
         }
 
-        // Vérifier que c'est une requête POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/');
             return;
         }
 
+        // --- AJOUT VÉRIFICATION ---
+        $this->verifyCsrfToken();
+
         $tripModel = new Trip();
         $trip = $tripModel->findById($id);
 
-        // Vérifier que le trajet existe
         if (!$trip) {
-            $_SESSION['flash']['error'] = "Trip not found.";
+            $_SESSION['flash']['error'] = "Trajet introuvable.";
             $this->redirect('/');
             return;
         }
 
-        // Vérifier que l'utilisateur est l'auteur
         if ($trip['user_id'] != $_SESSION['user']['id']) {
-            $_SESSION['flash']['error'] = "You are not authorized to edit this trip.";
+            $_SESSION['flash']['error'] = "Vous n'êtes pas l'auteur de ce trajet.";
             $this->redirect('/');
             return;
         }
 
-        // Récupération des données du formulaire
-        $departureAgency = (int)$_POST['departure_agency'];
-        $arrivalAgency = (int)$_POST['arrival_agency'];
-        $departureDatetime = $_POST['departure_datetime'] . ' ' . $_POST['departure_time'];
-        $arrivalDatetime = $_POST['arrival_datetime'] . ' ' . $_POST['arrival_time'];
-        $totalSeats = (int)$_POST['total_seats'];
+        $departureAgency = (int)($_POST['departure_agency'] ?? 0);
+        $arrivalAgency = (int)($_POST['arrival_agency'] ?? 0);
+        $departureDate = $_POST['departure_datetime'] ?? '';
+        $departureTime = $_POST['departure_time'] ?? '';
+        $arrivalDate = $_POST['arrival_datetime'] ?? '';
+        $arrivalTime = $_POST['arrival_time'] ?? '';
+        $totalSeats = (int)($_POST['total_seats'] ?? 0);
 
-        // --- Validation ---
+        $departureDatetime = $departureDate . ' ' . $departureTime;
+        $arrivalDatetime = $arrivalDate . ' ' . $arrivalTime;
+
         $errors = [];
 
-        // 1. Départ et arrivée doivent être différents
         if ($departureAgency === $arrivalAgency) {
-            $errors[] = "Departure and arrival agencies must be different.";
+            $errors[] = "Les agences de départ et d'arrivée doivent être différentes.";
         }
 
-        // 2. La date d'arrivée doit être postérieure à la date de départ
         if (strtotime($departureDatetime) >= strtotime($arrivalDatetime)) {
-            $errors[] = "Arrival date/time must be after departure date/time.";
+            $errors[] = "La date d'arrivée doit être postérieure à la date de départ.";
         }
 
-        // 3. Le nombre de places doit être > 0
         if ($totalSeats < 1) {
-            $errors[] = "Total seats must be at least 1.";
+            $errors[] = "Le nombre de places doit être d'au moins 1.";
         }
 
-        // 4. Vérifier que la date de départ n'est pas dans le passé
-        if (strtotime($departureDatetime) < time()) {
-            $errors[] = "Departure date/time cannot be in the past.";
-        }
-
-        // Si des erreurs, on retourne au formulaire avec les messages
         if (!empty($errors)) {
             $agencyModel = new Agency();
             $agencies = $agencyModel->findAll();
@@ -232,69 +231,65 @@ class TripController extends Controller
             return;
         }
 
-        // --- Mise à jour en base ---
         $data = [
             'departure_agency_id' => $departureAgency,
             'arrival_agency_id' => $arrivalAgency,
             'departure_datetime' => $departureDatetime,
             'arrival_datetime' => $arrivalDatetime,
             'total_seats' => $totalSeats,
-            'available_seats' => $totalSeats // on remet les places disponibles = total
+            'available_seats' => $totalSeats
         ];
 
         if ($tripModel->update($id, $data)) {
-            $_SESSION['flash']['success'] = "Trip updated successfully!";
+            $_SESSION['flash']['success'] = "Trajet mis à jour avec succès !";
         } else {
-            $_SESSION['flash']['error'] = "Error updating trip. Please try again.";
+            $_SESSION['flash']['error'] = "Erreur lors de la mise à jour.";
         }
 
         $this->redirect('/');
     }
 
-    // Affiche une boîte de dialogue pour la suppression d'un trajet
+    // Suppression d'un trajet
     public function delete($id)
     {
-        // Vérifier que l'utilisateur est connecté
         if (!isset($_SESSION['user'])) {
             $this->redirect('/auth/login');
             return;
         }
 
-        // Vérifier que c'est une requête POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/');
             return;
         }
 
+        // --- AJOUT VÉRIFICATION CSRF ---
+        $this->verifyCsrfToken();
+
         $tripModel = new Trip();
         $trip = $tripModel->findById($id);
 
-        // Vérifier que le trajet existe
         if (!$trip) {
-            $_SESSION['flash']['error'] = "Trip not found.";
+            $_SESSION['flash']['error'] = "Trajet introuvable.";
             $this->redirect('/');
             return;
         }
 
-        // Vérifier les droits : auteur OU administrateur
         $isAuthor = ($trip['user_id'] == $_SESSION['user']['id']);
         $isAdmin = isset($_SESSION['user']['is_admin']) && $_SESSION['user']['is_admin'] == 1;
 
         if (!$isAuthor && !$isAdmin) {
-            $_SESSION['flash']['error'] = "You are not authorized to delete this trip.";
+            $_SESSION['flash']['error'] = "Vous n'êtes pas autorisé à supprimer ce trajet.";
             $this->redirect('/');
             return;
         }
 
-        // Supprimer le trajet
         if ($tripModel->delete($id)) {
-            $_SESSION['flash']['success'] = "Trip deleted successfully!";
+            $_SESSION['flash']['success'] = "Trajet supprimé avec succès !";
         } else {
-            $_SESSION['flash']['error'] = "Error deleting trip. Please try again.";
+            $_SESSION['flash']['error'] = "Erreur lors de la suppression.";
         }
 
         $this->redirect('/');
     }
 }
-
 ?>

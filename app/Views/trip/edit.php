@@ -30,6 +30,7 @@ if (!isset($user) || !is_array($user)) {
         <?php endif; ?>
 
         <form method="POST" action="<?= BASE_URL ?>/trip/update/<?= $trip['id'] ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
             <!-- Informations de l'utilisateur (non modifiables) -->
             <div class="card mb-4">
                 <div class="card-header bg-light">

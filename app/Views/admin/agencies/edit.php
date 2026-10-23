@@ -3,6 +3,7 @@
 <h1>Modifier une agence</h1>
 
 <form method="POST" action="<?= BASE_URL ?>/admin/agencyUpdate/<?= htmlspecialchars((string) ($agency['id'] ?? '')) ?>">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
     <div class="mb-3">
         <label for="name" class="form-label">Nom de l'agence</label>
         <input type="text" class="form-control" id="name" name="name" value="<?= htmlspecialchars((string) ($agency['name'] ?? '')) ?>" required>
