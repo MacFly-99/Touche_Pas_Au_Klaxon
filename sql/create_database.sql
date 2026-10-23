@@ -1,5 +1,4 @@
-DROP DATABASE IF EXISTS covoiturage;
-CREATE DATABASE covoiturage CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE IF NOT EXISTS covoiturage CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE covoiturage;
 
 CREATE TABLE agencies (
@@ -14,7 +13,8 @@ CREATE TABLE users (
     phone VARCHAR(20) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    is_admin TINYINT(1) DEFAULT 0
+    is_admin TINYINT(1) DEFAULT 0,
+    deleted_at DATETIME NULL DEFAULT NULL -- Ajouté pour le Soft Delete
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE trips (

@@ -1,3 +1,20 @@
+<?php
+if (!isset($trip) || !is_array($trip)) {
+    $trip = [];
+}
+if (!isset($agencies) || !is_array($agencies)) {
+    $agencies = [];
+}
+if (!isset($user) || !is_array($user)) {
+    $user = [
+        'first_name' => $trip['first_name'] ?? '',
+        'last_name'  => $trip['last_name'] ?? '',
+        'email'      => $trip['email'] ?? '',
+        'phone'      => $trip['phone'] ?? '',
+    ];
+}
+?>
+
 <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6">
         <h1 class="mb-4">Modifier un trajet</h1>

@@ -2,6 +2,10 @@
 vendor/
 node_modules/
 
+# Fichiers de configuration locaux (à ne pas versionner)
+.env
+identifiants_test.txt
+
 # Fichiers de lock (optionnels – on les garde souvent en versionnement)
 # composer.lock
 # package-lock.json

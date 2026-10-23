@@ -14,6 +14,8 @@
 
         <form method="POST" action="<?= BASE_URL ?>/trip/store">
             <!-- Informations de l'utilisateur (non modifiables) -->
+            <?php $user = isset($user) && is_array($user) ? $user : []; ?>
+            <?php $agencies = isset($agencies) && is_array($agencies) ? $agencies : []; ?>
             <div class="card mb-4">
                 <div class="card-header bg-light">
                     <strong>Vos informations</strong>
@@ -22,19 +24,19 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Prénom</label>
-                            <input type="text" class="form-control" value="<?= htmlspecialchars($user['first_name']) ?>" readonly>
+                            <input type="text" class="form-control" value="<?= htmlspecialchars($user['first_name'] ?? '') ?>" readonly>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Nom</label>
-                            <input type="text" class="form-control" value="<?= htmlspecialchars($user['last_name']) ?>" readonly>
+                            <input type="text" class="form-control" value="<?= htmlspecialchars($user['last_name'] ?? '') ?>" readonly>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" readonly>
+                            <input type="email" class="form-control" value="<?= htmlspecialchars($user['email'] ?? '') ?>" readonly>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Téléphone</label>
-                            <input type="text" class="form-control" value="<?= htmlspecialchars($user['phone']) ?>" readonly>
+                            <input type="text" class="form-control" value="<?= htmlspecialchars($user['phone'] ?? '') ?>" readonly>
                         </div>
                     </div>
                 </div>
