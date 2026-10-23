@@ -12,7 +12,7 @@
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($agencies as $agency): ?>
+            <?php foreach (($agencies ?? []) as $agency): ?>
                 <tr>
                     <td><?= $agency['id'] ?></td>
                     <td><?= htmlspecialchars($agency['name']) ?></td>

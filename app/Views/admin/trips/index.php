@@ -16,7 +16,7 @@
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($trips as $trip): ?>
+            <?php foreach ($trips ?? [] as $trip): ?>
                 <tr>
                     <td><?= $trip['id'] ?></td>
                     <td><?= htmlspecialchars($trip['departure_name']) ?></td>

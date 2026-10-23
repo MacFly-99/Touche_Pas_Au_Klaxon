@@ -29,6 +29,34 @@ class AdminController extends Controller
         $this->render('admin/users/index', ['users' => $users]);
     }
 
+    // --- Suppression d'un utilisateur ---
+    public function userDelete($id)
+    {
+        $this->checkAdmin();
+        
+        // Vérification de la méthode POST
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/admin/users');
+            return;
+        }
+
+        // Empêcher l'admin de supprimer son propre compte
+        if (isset($_SESSION['user']['id']) && $id == $_SESSION['user']['id']) {
+            $_SESSION['flash']['error'] = "Vous ne pouvez pas supprimer votre propre compte.";
+            $this->redirect('/admin/users');
+            return;
+        }
+
+        $userModel = new User();
+        if ($userModel->softDelete($id)) {
+            $_SESSION['flash']['success'] = "Utilisateur supprimé avec succès.";
+        } else {
+            $_SESSION['flash']['error'] = "Erreur lors de la suppression de l'utilisateur.";
+        }
+        
+        $this->redirect('/admin/users');
+    }
+
     // --- Gestion des agences ---
     public function agencies()
     {
@@ -148,5 +176,4 @@ class AdminController extends Controller
         $this->redirect('/admin/trips');
     }
 }
-
 ?>

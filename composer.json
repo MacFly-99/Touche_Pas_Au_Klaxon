@@ -16,5 +16,8 @@
         "psr-4": {
             "Tests\\": "tests/"
         }
+    },
+    "require": {
+        "vlucas/phpdotenv": "^5.7"
     }
 }
