@@ -13,6 +13,7 @@
         <?php endif; ?>
 
         <form method="POST" action="<?= BASE_URL ?>/trip/store">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
             <!-- Informations de l'utilisateur (non modifiables) -->
             <?php $user = isset($user) && is_array($user) ? $user : []; ?>
             <?php $agencies = isset($agencies) && is_array($agencies) ? $agencies : []; ?>

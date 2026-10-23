@@ -17,6 +17,9 @@ class AuthController extends Controller
 
         // Si c'est une soumission de formulaire (POST)
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            
+        $this->verifyCsrfToken();
+        
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
 
@@ -24,6 +27,9 @@ class AuthController extends Controller
             $user = $userModel->verifyPassword($email, $password);
 
             if ($user) {
+                
+                session_regenerate_id(true);
+
                 // Connexion réussie
                 $_SESSION['user'] = $user;
                 $this->redirect('/');

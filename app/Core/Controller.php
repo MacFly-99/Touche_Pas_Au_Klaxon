@@ -39,6 +39,22 @@ class Controller
         }
         return null;
     }
+
+     /**
+     * Vérifie la validité du token CSRF
+     * Si invalide, arrête le script avec une erreur 403
+     */
+    protected function verifyCsrfToken()
+    {
+        // On récupère le token envoyé par le formulaire
+        $token = $_POST['csrf_token'] ?? '';
+        
+        // On le compare avec celui de la session en utilisant hash_equals (pour éviter les attaques temporelles)
+        if (empty($token) || !hash_equals($_SESSION['csrf_token'], $token)) {
+            http_response_code(403);
+            die("Erreur de sécurité : Jeton CSRF invalide ou expiré. Veuillez rafraîchir la page.");
+        }
+    }
 }
 
 ?>
