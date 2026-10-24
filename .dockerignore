@@ -1,0 +1,12 @@
+.env
+.git
+.gitignore
+.vscode
+node_modules
+vendor
+tests
+phpunit.xml
+Dockerfile
+.dockerignore
+README.md
+identifiants_test.txt
