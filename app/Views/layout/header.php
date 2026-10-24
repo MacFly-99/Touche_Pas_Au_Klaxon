@@ -89,8 +89,8 @@
                     <?php else: ?>
                         <!-- Menu Utilisateur -->
                         <li class="nav-item">
-                            <a href="<?= BASE_URL ?>/trip/create" class="btn btn-outline-light btn-sm w-100">
-                                <i class="bi bi-plus-circle me-1"></i> Proposer un trajet
+                            <a href="<?= BASE_URL ?>/trip/create" class="btn btn-success w-100 fw-bold shadow-sm py-2">
+                                <i class="bi bi-plus-circle-fill me-2"></i> Proposer un trajet
                             </a>
                         </li>
                         <li class="nav-item">

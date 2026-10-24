@@ -10,8 +10,8 @@
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
     <h2 class="h3 mb-0 text-secondary fw-bold">Trajets disponibles</h2>
     <?php if (isset($_SESSION['user'])): ?>
-        <a href="<?= BASE_URL ?>/trip/create" class="btn btn-primary shadow-sm w-100 w-md-auto">
-            <i class="bi bi-plus-lg me-1"></i> Proposer un trajet
+        <a href="<?= BASE_URL ?>/trip/create" class="btn btn-primary btn-lg shadow fw-bold rounded-pill px-4 w-100 w-md-auto text-nowrap">
+            <i class="bi bi-plus-circle-fill me-2"></i> Proposer un trajet
         </a>
     <?php endif; ?>
 </div>
