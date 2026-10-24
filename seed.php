@@ -11,17 +11,43 @@ $host = $_ENV['DB_HOST'];
 $db   = $_ENV['DB_NAME'];
 $user = $_ENV['DB_USER'];
 $pass = $_ENV['DB_PASS'];
+$port = $_ENV['DB_PORT'] ?? '4000'; // Port par défaut de TiDB Cloud
+
+// Configuration SSL pour TiDB (indispensable pour le plan serverless)
+$caPath = __DIR__ . '/isrgrootx1.pem';
+if (!file_exists($caPath)) {
+    die("❌ Erreur : Le fichier de certificat isrgrootx1.pem est introuvable à la racine.\n");
+}
 
 try {
-    // 2. Connexion et création de la base
-    $pdo = new PDO("mysql:host=$host;charset=utf8", $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // 2. Connexion et création de la base (avec SSL)
+    // On ajoute le port et les options SSL
+    $dsn = "mysql:host=$host;port=$port;charset=utf8";
+    $options = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::MYSQL_ATTR_SSL_CA => $caPath,
+    ];
 
-    $pdo->exec("DROP DATABASE IF EXISTS $db");
-    $pdo->exec("CREATE DATABASE $db CHARACTER SET utf8 COLLATE utf8_general_ci");
+    $pdo = new PDO($dsn, $user, $pass, $options);
+
+    // TiDB Cloud Serverless interdit parfois le DROP/CREATE DATABASE si on n'est pas connecté à la bonne instance.
+    // On essaie de créer la base. Si elle existe déjà, on passe à la suite.
+    try {
+        $pdo->exec("CREATE DATABASE IF NOT EXISTS $db CHARACTER SET utf8 COLLATE utf8_general_ci");
+    } catch (PDOException $e) {
+        // Si on n'a pas les droits de création, on ignore et on espère qu'elle existe
+    }
+    
     $pdo->exec("USE $db");
 
-    // 3. Création des tables
+    // 3. Nettoyage (On supprime les tables si elles existent pour repartir de zéro)
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
+    $pdo->exec("DROP TABLE IF EXISTS trips");
+    $pdo->exec("DROP TABLE IF EXISTS users");
+    $pdo->exec("DROP TABLE IF EXISTS agencies");
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
+
+    // 4. Création des tables
     $pdo->exec("CREATE TABLE agencies (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL UNIQUE
@@ -54,7 +80,7 @@ try {
 
     echo "✅ Base de données et tables créées.\n";
 
-    // 4. Insertion des agences
+    // 5. Insertion des agences
     $agencies = ['Paris', 'Lyon', 'Marseille', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Montpellier', 'Bordeaux', 'Lille', 'Rennes', 'Reims'];
     $stmtAgency = $pdo->prepare("INSERT INTO agencies (name) VALUES (?)");
     foreach ($agencies as $agency) {
@@ -62,22 +88,26 @@ try {
     }
     echo "✅ Agences insérées.\n";
 
-    // Préparation pour l'insertion des utilisateurs
+    // 6. Préparation de l'insertion des utilisateurs
     $stmtUser = $pdo->prepare("INSERT INTO users (last_name, first_name, phone, email, password_hash, is_admin) VALUES (?, ?, ?, ?, ?, ?)");
     
     // Tableau pour stocker les identifiants générés
-    $credentialsTxt = "=== IDENTIFIANTS DE CONNEXION ===\n\n";
+    $credentialsTxt = "=== IDENTIFIANTS DE CONNEXION (BASE DISTANTE) ===\n\n";
 
-    // 5. Insertion de l'ADMIN (depuis le .env)
+    // 6a. Insertion de l'ADMIN via .env
     $adminHash = password_hash($_ENV['ADMIN_PASSWORD'], PASSWORD_DEFAULT);
     $stmtUser->execute([
-        $_ENV['ADMIN_LAST_NAME'], $_ENV['ADMIN_FIRST_NAME'], $_ENV['ADMIN_PHONE'], 
-        $_ENV['ADMIN_EMAIL'], $adminHash, 1
+        $_ENV['ADMIN_LAST_NAME'] ?? 'Admin',
+        $_ENV['ADMIN_FIRST_NAME'] ?? 'Super',
+        $_ENV['ADMIN_PHONE'] ?? '0102030405',
+        $_ENV['ADMIN_EMAIL'],
+        $adminHash,
+        1
     ]);
     $credentialsTxt .= "👑 ADMIN :\nEmail: {$_ENV['ADMIN_EMAIL']}\nMot de passe: {$_ENV['ADMIN_PASSWORD']}\n\n";
     $credentialsTxt .= "-----------------------------------\n\n";
 
-    // 6. Les 20 Utilisateurs avec MOTS DE PASSE UNIQUES
+    // 6b. Les 20 Utilisateurs avec MOTS DE PASSE UNIQUES
     $fakeUsers = [
         ['Martin', 'Alexandre', '0612345678', 'alexandre.martin@email.fr'],
         ['Dubois', 'Sophie', '0698765432', 'sophie.dubois@email.fr'],
@@ -102,42 +132,38 @@ try {
     ];
 
     foreach ($fakeUsers as $u) {
-        // Générer un mot de passe aléatoire de 10 caractères (sans caractères ambigus comme l, 1, O, 0)
+        // Générer un mot de passe aléatoire
         $randomPassword = substr(str_shuffle('abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'), 0, 10);
-        
-        // Hacher ce mot de passe unique
         $hash = password_hash($randomPassword, PASSWORD_DEFAULT);
         
-        // Insérer dans la BDD
         $stmtUser->execute([$u[0], $u[1], $u[2], $u[3], $hash, 0]);
         
-        // Sauvegarder dans le fichier texte
         $credentialsTxt .= "Utilisateur : {$u[1]} {$u[0]}\nEmail: {$u[3]}\nMot de passe: $randomPassword\n\n";
     }
     
-    echo "✅ 20 Utilisateurs avec des mots de passe uniques créés.\n";
+    echo "✅ 20 Utilisateurs créés avec des mots de passe uniques.\n";
 
     // 7. Insertion de trajets (pour Alexandre Martin)
     $stmt = $pdo->query("SELECT id FROM users WHERE email = 'alexandre.martin@email.fr'");
     $userId = $stmt->fetchColumn();
 
     $trips = [
-        [1, 2, '2026-11-01 09:00:00', '2026-11-01 11:00:00', 3, 3, $userId],
-        [2, 3, '2026-11-02 14:00:00', '2026-11-02 15:00:00', 4, 4, $userId],
-        [1, 9, '2026-11-03 08:00:00', '2026-11-03 11:00:00', 2, 2, $userId],
+        [1, 2, date('Y-m-d H:i:s', strtotime('+2 days')), date('Y-m-d H:i:s', strtotime('+2 days + 2 hours')), 3, 3, $userId],
+        [2, 3, date('Y-m-d H:i:s', strtotime('+3 days')), date('Y-m-d H:i:s', strtotime('+3 days + 1 hour')), 4, 4, $userId],
+        [1, 9, date('Y-m-d H:i:s', strtotime('+4 days')), date('Y-m-d H:i:s', strtotime('+4 days + 3 hours')), 2, 2, $userId],
     ];
     $stmtTrip = $pdo->prepare("INSERT INTO trips (departure_agency_id, arrival_agency_id, departure_datetime, arrival_datetime, total_seats, available_seats, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
     foreach ($trips as $trip) {
         $stmtTrip->execute($trip);
     }
-    echo "✅ Trajets insérés.\n";
+    echo "✅ Trajets insérés (dates futures).\n";
 
     // 8. Sauvegarder le fichier texte des identifiants
     file_put_contents('identifiants_test.txt', $credentialsTxt);
     
-    echo "\n🎉 TERMINÉ ! Tous les mots de passe ont été générés.\n";
-    echo "👉 Ouvre le fichier 'identifiants_test.txt' à la racine de ton projet pour voir les accès !\n";
+    echo "\n🎉 TERMINÉ ! La base de données distante est prête.\n";
+    echo "👉 Ouvre le fichier 'identifiants_test.txt' à la racine pour voir les accès !\n";
 
 } catch (PDOException $e) {
-    die("❌ Erreur : " . $e->getMessage());
+    die("❌ Erreur : " . $e->getMessage() . "\n");
 }
