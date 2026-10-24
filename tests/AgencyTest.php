@@ -3,95 +3,88 @@ namespace Tests\Models;
 
 use PHPUnit\Framework\TestCase;
 use App\Models\Agency;
+use App\Config\Database;
 
 class AgencyTest extends TestCase
 {
     private $agencyModel;
+    private $pdo;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->pdo = Database::getInstance();
         $this->agencyModel = new Agency();
+
+        // 1. On nettoie la table (sécurité pour les tests)
+        $this->pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
+        $this->pdo->exec("DELETE FROM trips");
+        $this->pdo->exec("DELETE FROM agencies");
+        $this->pdo->exec("ALTER TABLE agencies AUTO_INCREMENT = 1");
+        $this->pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
+
+        // 2. On crée des données de test (Fixtures)
+        $this->agencyModel->insert("Paris");
+        $this->agencyModel->insert("Lyon");
     }
 
     public function testFindAllReturnsArray()
     {
         $agencies = $this->agencyModel->findAll();
-        $this->assertIsArray($agencies, 'findAll should return an array');
-        $this->assertNotEmpty($agencies, 'findAll should return at least one agency');
+        $this->assertIsArray($agencies);
+        $this->assertCount(2, $agencies, 'Il devrait y avoir 2 agences');
     }
 
     public function testFindReturnsAgency()
     {
-        // Récupérer la première agence
         $agencies = $this->agencyModel->findAll();
-        if (empty($agencies)) {
-            $this->markTestSkipped('No agencies available for testing');
-            return;
-        }
-        
         $firstAgency = $agencies[0];
+        
         $agency = $this->agencyModel->find($firstAgency['id']);
         
-        $this->assertIsArray($agency, 'find should return an array');
+        $this->assertIsArray($agency);
         $this->assertEquals($firstAgency['id'], $agency['id']);
-        $this->assertEquals($firstAgency['name'], $agency['name']);
+        
+        // On compare avec le nom de la première agence trouvée
+        $this->assertEquals($firstAgency['name'], $agency['name']); 
     }
 
     public function testInsertAndDeleteAgency()
     {
-        $testName = 'Test Agency ' . time();
+        $testName = 'Marseille';
         
         // Insertion
         $insertResult = $this->agencyModel->insert($testName);
-        $this->assertTrue($insertResult, 'Insert should return true');
+        $this->assertTrue($insertResult);
         
-        // Récupérer l'agence créée
-        $stmt = $this->agencyModel->getDb()->prepare("SELECT * FROM agencies WHERE name = ?");
+        // Vérification
+        $stmt = $this->pdo->prepare("SELECT * FROM agencies WHERE name = ?");
         $stmt->execute([$testName]);
         $agency = $stmt->fetch(\PDO::FETCH_ASSOC);
-        
-        $this->assertIsArray($agency, 'Agency should exist after insert');
-        $this->assertEquals($testName, $agency['name']);
+        $this->assertIsArray($agency);
         
         // Suppression
         $deleteResult = $this->agencyModel->delete($agency['id']);
-        $this->assertTrue($deleteResult, 'Delete should return true');
+        $this->assertTrue($deleteResult);
         
-        // Vérifier que l'agence n'existe plus
-        $stmt = $this->agencyModel->getDb()->prepare("SELECT * FROM agencies WHERE name = ?");
+        // Vérification suppression
+        $stmt = $this->pdo->prepare("SELECT * FROM agencies WHERE id = ?");
         $stmt->execute([$agency['id']]);
         $deletedAgency = $stmt->fetch();
-        $this->assertFalse($deletedAgency, 'Agency should not exist after delete');
+        $this->assertFalse($deletedAgency);
     }
 
     public function testUpdateAgency()
     {
-        // Créer une agence de test
-        $testName = 'Temp Agency ' . time();
-        $this->agencyModel->insert($testName);
+        $agencies = $this->agencyModel->findAll();
+        $agency = $agencies[0]; // Paris
         
-        $stmt = $this->agencyModel->getDb()->prepare("SELECT * FROM agencies WHERE name = ?");
-        $stmt->execute([$testName]);
-        $agency = $stmt->fetch(\PDO::FETCH_ASSOC);
-        
-        if (!$agency) {
-            $this->markTestSkipped('Could not create test agency');
-            return;
-        }
-        
-        // Mise à jour
-        $newName = 'Updated Agency ' . time();
+        $newName = 'Paris 16';
         $updateResult = $this->agencyModel->update($agency['id'], $newName);
-        $this->assertTrue($updateResult, 'Update should return true');
+        $this->assertTrue($updateResult);
         
-        // Vérifier la mise à jour
         $updatedAgency = $this->agencyModel->find($agency['id']);
         $this->assertEquals($newName, $updatedAgency['name']);
-        
-        // Nettoyer
-        $this->agencyModel->delete($agency['id']);
     }
 }
-
 ?>
