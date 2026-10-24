@@ -1,6 +1,6 @@
-<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4 mt-3">
     <h2 class="h3 mb-0 text-secondary fw-bold">Gestion des utilisateurs</h2>
-    <a href="<?= BASE_URL ?>/admin/userCreate" class="btn btn-primary shadow-sm">
+    <a href="<?= BASE_URL ?>/admin/userCreate" class="btn btn-primary shadow-sm w-100 w-md-auto text-nowrap">
         <i class="bi bi-person-plus-fill me-1"></i> Créer un utilisateur
     </a>
 </div>
