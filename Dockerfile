@@ -5,8 +5,8 @@ FROM php:8.3-apache
 RUN a2enmod rewrite
 
 # =========================================================================
-# INSTALLATION DES OUTILS SYSTÈME INDISPENSABLES POUR COMPOSER
-# (unzip et git sont requis pour télécharger les paquets proprement)
+# INSTALLATION DES OUTILS SYSTÈME INDISPENSABLES
+# (unzip et git pour Composer, libzip-dev pour l'extension zip)
 # =========================================================================
 RUN apt-get update && apt-get install -y \
     unzip \
@@ -16,8 +16,9 @@ RUN apt-get update && apt-get install -y \
 
 # =========================================================================
 # INSTALLATION DES EXTENSIONS PHP
+# (on retire mbstring car il est déjà présent, et on ajoute zip)
 # =========================================================================
-RUN docker-php-ext-install pdo pdo_mysql zip mbstring exif pcntl bcmath gd
+RUN docker-php-ext-install pdo pdo_mysql zip exif pcntl bcmath gd
 
 # =========================================================================
 # ON AUTORISE COMPOSER À TOURNER EN ROOT DANS LE CONTAINER
@@ -33,7 +34,7 @@ COPY . .
 # On installe Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# On installe les dépendances (maintenant ça va marcher !)
+# On installe les dépendances
 RUN composer install --no-dev --optimize-autoloader
 
 # =========================================================================
