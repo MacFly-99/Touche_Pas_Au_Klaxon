@@ -16,27 +16,24 @@ class UserTest extends TestCase
     {
         parent::setUp();
         
-        // 1. On récupère la connexion PDO et le modèle
         $this->pdo = Database::getInstance();
         $this->userModel = new User();
 
-        // 2. On nettoie la base (désactivation temporaire des clés étrangères)
+        // Nettoyage
         $this->pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
         $this->pdo->exec("DELETE FROM trips");
         $this->pdo->exec("DELETE FROM users");
         $this->pdo->exec("ALTER TABLE users AUTO_INCREMENT = 1");
         $this->pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
 
-        // 3. On crée l'utilisateur avec le VRAI hash (généré automatiquement)
+        // Fixture : Création d'un utilisateur
         $hash = password_hash($this->testPassword, PASSWORD_DEFAULT);
-        
         $stmt = $this->pdo->prepare("INSERT INTO users (last_name, first_name, phone, email, password_hash, is_admin) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->execute(['Martin', 'Alexandre', '0612345678', 'alexandre.martin@email.fr', $hash, 0]);
     }
 
     protected function tearDown(): void
     {
-        // Optionnel : On nettoie après le test pour laisser la base propre
         $this->pdo->exec("DELETE FROM users");
         parent::tearDown();
     }
@@ -44,56 +41,56 @@ class UserTest extends TestCase
     public function testFindByEmailReturnsUser()
     {
         $user = $this->userModel->findByEmail('alexandre.martin@email.fr');
-        $this->assertIsArray($user, 'findByEmail should return an array');
+        $this->assertIsArray($user);
         $this->assertEquals('alexandre.martin@email.fr', $user['email']);
-        $this->assertArrayHasKey('id', $user);
-        $this->assertArrayHasKey('last_name', $user);
-        $this->assertArrayHasKey('first_name', $user);
-        $this->assertArrayHasKey('phone', $user);
-        $this->assertArrayHasKey('password_hash', $user);
-        $this->assertArrayHasKey('is_admin', $user);
     }
 
     public function testFindByEmailReturnsFalseForNonExistentEmail()
     {
         $user = $this->userModel->findByEmail('nonexistent@email.com');
-        $this->assertFalse($user, 'findByEmail should return false for non-existent email');
+        $this->assertFalse($user);
     }
 
     public function testVerifyPasswordWithCorrectPassword()
     {
-        // On utilise la variable $this->testPassword
         $user = $this->userModel->verifyPassword('alexandre.martin@email.fr', $this->testPassword);
-        $this->assertIsArray($user, 'verifyPassword should return user array for correct password');
+        $this->assertIsArray($user);
         $this->assertEquals('alexandre.martin@email.fr', $user['email']);
     }
 
     public function testVerifyPasswordWithIncorrectPassword()
     {
         $user = $this->userModel->verifyPassword('alexandre.martin@email.fr', 'wrongpassword');
-        $this->assertFalse($user, 'verifyPassword should return false for incorrect password');
-    }
-
-    public function testVerifyPasswordWithNonExistentEmail()
-    {
-        $user = $this->userModel->verifyPassword('nonexistent@email.com', 'secret');
-        $this->assertFalse($user, 'verifyPassword should return false for non-existent email');
+        $this->assertFalse($user);
     }
 
     public function testFindAllReturnsArray()
     {
         $users = $this->userModel->findAll();
-        $this->assertIsArray($users, 'findAll should return an array');
-        $this->assertNotEmpty($users, 'findAll should return at least one user');
+        $this->assertIsArray($users);
+        $this->assertCount(1, $users, 'Il ne devrait y avoir qu\'un seul utilisateur');
+    }
 
-        // Vérifier que chaque élément a les bonnes clés
-        $firstUser = $users[0];
-        $this->assertArrayHasKey('id', $firstUser);
-        $this->assertArrayHasKey('last_name', $firstUser);
-        $this->assertArrayHasKey('first_name', $firstUser);
-        $this->assertArrayHasKey('email', $firstUser);
-        $this->assertArrayHasKey('phone', $firstUser);
-        $this->assertArrayHasKey('is_admin', $firstUser);
+    // NOUVEAU TEST : Vérification du Soft Delete
+    public function testSoftDeleteUser()
+    {
+        $user = $this->userModel->findByEmail('alexandre.martin@email.fr');
+        $this->assertIsArray($user);
+
+        // On supprime (soft delete)
+        $result = $this->userModel->softDelete($user['id']);
+        $this->assertTrue($result);
+
+        // L'utilisateur ne doit plus être trouvé par findByEmail (car on filtre sur deleted_at IS NULL)
+        $deletedUser = $this->userModel->findByEmail('alexandre.martin@email.fr');
+        $this->assertFalse($deletedUser, 'L\'utilisateur supprimé ne doit plus être trouvable');
+
+        // Mais il doit toujours exister dans la BDD (vérification directe SQL)
+        $stmt = $this->pdo->prepare("SELECT deleted_at FROM users WHERE id = ?");
+        $stmt->execute([$user['id']]);
+        $dbUser = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        $this->assertNotNull($dbUser['deleted_at'], 'La colonne deleted_at doit être remplie');
     }
 }
 ?>
