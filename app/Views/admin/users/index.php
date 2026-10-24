@@ -44,38 +44,44 @@
                             </button>
                         <?php else: ?>
                             
-                            <!-- BOUTON MODIFIÉ : Ouvre la modale de rôle avec les bonnes infos -->
-                            <?php if ($user['is_admin']): ?>
-                                <button type="button" class="btn btn-outline-secondary btn-sm" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#roleModal"
-                                        data-user-id="<?= $user['id'] ?>"
-                                        data-user-name="<?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>"
-                                        data-action="rétrograder"
-                                        data-btn-class="btn-secondary">
-                                    <i class="bi bi-arrow-down-circle"></i> Rétrograder
-                                </button>
-                            <?php else: ?>
-                                <button type="button" class="btn btn-outline-success btn-sm" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#roleModal"
-                                        data-user-id="<?= $user['id'] ?>"
-                                        data-user-name="<?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>"
-                                        data-action="promouvoir"
-                                        data-btn-class="btn-success">
-                                    <i class="bi bi-arrow-up-circle"></i> Promouvoir
-                                </button>
-                            <?php endif; ?>
+                            <!-- CONTENEUR FLEX : Colonne sur mobile, Ligne sur PC -->
+                            <div class="d-flex flex-column flex-md-row gap-2 justify-content-end">
+                                
+                                <!-- Bouton qui ouvre la modale de changement de rôle -->
+                                <?php if ($user['is_admin']): ?>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm w-100" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#roleModal"
+                                            data-user-id="<?= $user['id'] ?>"
+                                            data-user-name="<?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>"
+                                            data-action="rétrograder"
+                                            data-btn-class="btn-secondary">
+                                        <i class="bi bi-arrow-down-circle"></i> Rétrograder
+                                    </button>
+                                <?php else: ?>
+                                    <button type="button" class="btn btn-outline-success btn-sm w-100" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#roleModal"
+                                            data-user-id="<?= $user['id'] ?>"
+                                            data-user-name="<?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>"
+                                            data-action="promouvoir"
+                                            data-btn-class="btn-success">
+                                        <i class="bi bi-arrow-up-circle"></i> Promouvoir
+                                    </button>
+                                <?php endif; ?>
 
-                            <!-- Bouton Supprimer (inchangé) -->
-                            <button type="button" 
-                                    class="btn btn-danger btn-sm ms-1" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#deleteUserModal"
-                                    data-user-id="<?= $user['id'] ?>"
-                                    data-user-name="<?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>">
-                                <i class="bi bi-trash"></i> Supprimer
-                            </button>
+                                <!-- Bouton Supprimer -->
+                                <button type="button" 
+                                        class="btn btn-danger btn-sm w-100" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#deleteUserModal"
+                                        data-user-id="<?= $user['id'] ?>"
+                                        data-user-name="<?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>">
+                                    <i class="bi bi-trash"></i> Supprimer
+                                </button>
+                                
+                            </div>
+
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -85,7 +91,7 @@
 </div>
 
 <!-- ========================================== -->
-<!-- MODALE 1 : Changement de rôle (Nouvelle)   -->
+<!-- MODALE 1 : Changement de rôle              -->
 <!-- ========================================== -->
 <div class="modal fade" id="roleModal" tabindex="-1" aria-labelledby="roleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -101,7 +107,6 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                 <form id="roleForm" method="POST" style="display:inline;">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
-                    <!-- Le bouton change de couleur selon l'action (success ou secondary) -->
                     <button type="submit" id="roleSubmitBtn" class="btn">Confirmer</button>
                 </form>
             </div>
@@ -147,18 +152,15 @@ document.addEventListener('DOMContentLoaded', function() {
         var button = event.relatedTarget;
         var userId = button.getAttribute('data-user-id');
         var userName = button.getAttribute('data-user-name');
-        var action = button.getAttribute('data-action'); // "promouvoir" ou "rétrograder"
-        var btnClass = button.getAttribute('data-btn-class'); // "btn-success" ou "btn-secondary"
+        var action = button.getAttribute('data-action');
+        var btnClass = button.getAttribute('data-btn-class');
         
-        // Mise à jour du texte
         roleModal.querySelector('#roleUserName').textContent = userName;
         roleModal.querySelector('#roleActionName').textContent = action;
         
-        // Mise à jour de l'action du formulaire
         var form = roleModal.querySelector('#roleForm');
         form.action = '<?= BASE_URL ?>/admin/userToggleRole/' + userId;
 
-        // Mise à jour du style du bouton de confirmation
         var submitBtn = roleModal.querySelector('#roleSubmitBtn');
         submitBtn.className = 'btn ' + btnClass;
         submitBtn.textContent = (action === 'promouvoir') ? 'Promouvoir' : 'Rétrograder';
