@@ -21,14 +21,14 @@ header("X-Frame-Options: DENY");
 header("X-Content-Type-Options: nosniff");
 // Politique de référent
 header("Referrer-Policy: strict-origin-when-cross-origin");
-// Content Security Policy (CSP) - Autorise Bootstrap CDN
+// Content Security Policy (CSP)
 header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://cdn.jsdelivr.net;");
 
 // ==========================================
 // 3. SÉCURISATION DES SESSIONS
 // ==========================================
-ini_set('session.cookie_httponly', 1); 
-ini_set('session.use_only_cookies', 1); 
+ini_set('session.cookie_httponly', 1);
+ini_set('session.use_only_cookies', 1);
 session_start();
 
 // ==========================================
@@ -41,8 +41,15 @@ if (empty($_SESSION['csrf_token'])) {
 // ==========================================
 // 5. CONSTANTES ET ROUTAGE
 // ==========================================
-// Définition de l'URL de base de l'application
-define('BASE_URL', '/covoiturage/public');
+// DÉTECTION DYNAMIQUE DE L'URL DE BASE
+if (isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1')) {
+    // Environnement local (XAMPP)
+    define('BASE_URL', '/covoiturage/public');
+} else {
+    // Environnement de production (Render)
+    define('BASE_URL', ''); 
+}
+
 define('ROOT', dirname(__DIR__));
 
 // Lancement du routeur
