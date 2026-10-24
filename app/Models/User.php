@@ -44,6 +44,31 @@ class User extends Model
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // Crée un nouvel utilisateur
+    public function insert($data)
+    {
+        $sql = "INSERT INTO users (last_name, first_name, phone, email, password_hash, is_admin) 
+                VALUES (:last_name, :first_name, :phone, :email, :password_hash, :is_admin)";
+        
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':last_name'     => $data['last_name'],
+            ':first_name'    => $data['first_name'],
+            ':phone'         => $data['phone'],
+            ':email'         => $data['email'],
+            ':password_hash' => $data['password_hash'],
+            ':is_admin'      => $data['is_admin']
+        ]);
+    }
+
+    // Met à jour le rôle (admin ou non) d'un utilisateur
+    public function updateRole($id, $isAdmin)
+    {
+        $sql = "UPDATE users SET is_admin = ? WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$isAdmin, $id]);
+    }
+
     // Suppression logique (Soft Delete)
     public function softDelete($id)
     {
