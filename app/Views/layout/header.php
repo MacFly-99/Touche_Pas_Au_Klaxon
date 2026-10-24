@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Touche Pas Au Klaxon</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         :root {
             --bs-primary: #0074c7;
@@ -30,7 +31,13 @@
             background-color: #00497c !important;
         }
         body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
             background-color: #f1f8fc;
+        }
+        body > .container {
+            flex: 1;
         }
         .bg-primary {
             background-color: #0074c7 !important;
@@ -40,6 +47,14 @@
         }
         .text-primary {
             color: #0074c7 !important;
+        }
+        .hover-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
         }
     </style>
 </head>
