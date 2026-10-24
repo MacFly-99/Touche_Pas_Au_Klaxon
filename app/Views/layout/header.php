@@ -59,40 +59,56 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #00497c;">
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm" style="background-color: #00497c;">
     <div class="container-fluid">
-        <a class="navbar-brand" href="<?= BASE_URL ?>/">Touche Pas Au Klaxon</a>
+        <!-- Logo / Marque -->
+        <a class="navbar-brand fw-bold" href="<?= BASE_URL ?>/">
+            <i class="bi bi-car-front-fill me-1"></i> Touche Pas Au Klaxon
+        </a>
         
-        <div class="d-flex align-items-center">
-            <?php if (isset($_SESSION['user'])): ?>
-                
-                <?php if ($_SESSION['user']['is_admin'] == 1): ?>
-                    <!-- Menu Admin -->
-                    <ul class="navbar-nav me-3">
+        <!-- Bouton Burger (visible uniquement sur mobile) -->
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Contenu de la navbar (qui se cache sur mobile) -->
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav ms-auto align-items-center gap-2 mt-3 mt-lg-0">
+                <?php if (isset($_SESSION['user'])): ?>
+                    
+                    <?php if ($_SESSION['user']['is_admin'] == 1): ?>
+                        <!-- Menu Admin -->
                         <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>/admin/users">Utilisateurs</a></li>
                         <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>/admin/agencies">Agences</a></li>
                         <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>/admin/trips">Trajets</a></li>
-                    </ul>
-                    <span class="navbar-text text-light me-3">
-                        <i class="bi bi-shield-lock me-1"></i> Admin: <?= htmlspecialchars($_SESSION['user']['first_name']) ?>
-                    </span>
-                <?php else: ?>
-                    <!-- Menu Utilisateur -->
-                    <a href="<?= BASE_URL ?>/trip/create" class="btn btn-outline-light btn-sm me-3">
-                        <i class="bi bi-plus-circle me-1"></i> Proposer un trajet
-                    </a>
-                    <span class="navbar-text text-light me-3">
-                        <i class="bi bi-person-circle me-1"></i> <?= htmlspecialchars($_SESSION['user']['first_name'] . ' ' . $_SESSION['user']['last_name']) ?>
-                    </span>
-                <?php endif; ?>
-                
-                <!-- Bouton Déconnexion (pour tout le monde) -->
-                <a href="<?= BASE_URL ?>/auth/logout" class="btn btn-danger">
-                    <i class="bi bi-box-arrow-right me-1"></i> Déconnexion
-                </a>
+                        <li class="nav-item">
+                            <span class="navbar-text text-light fw-bold bg-dark bg-opacity-25 px-3 py-1 rounded-pill">
+                                <i class="bi bi-shield-lock me-1"></i> Admin: <?= htmlspecialchars($_SESSION['user']['first_name']) ?>
+                            </span>
+                        </li>
+                    <?php else: ?>
+                        <!-- Menu Utilisateur -->
+                        <li class="nav-item">
+                            <a href="<?= BASE_URL ?>/trip/create" class="btn btn-outline-light btn-sm w-100">
+                                <i class="bi bi-plus-circle me-1"></i> Proposer un trajet
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <span class="navbar-text text-light fw-bold px-3">
+                                <i class="bi bi-person-circle me-1"></i> <?= htmlspecialchars($_SESSION['user']['first_name']) ?>
+                            </span>
+                        </li>
+                    <?php endif; ?>
+                    
+                    <!-- Bouton Déconnexion -->
+                    <li class="nav-item w-100 text-center mt-2 mt-lg-0 w-auto">
+                        <a href="<?= BASE_URL ?>/auth/logout" class="btn btn-danger btn-sm px-4">
+                            <i class="bi bi-box-arrow-right me-1"></i> Déconnexion
+                        </a>
+                    </li>
 
-            <?php endif; ?>
-            <!-- Note : on ne met rien pour les visiteurs, car ils sont sur la page de login -->
+                <?php endif; ?>
+            </ul>
         </div>
     </div>
 </nav>

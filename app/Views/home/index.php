@@ -1,16 +1,16 @@
 <!-- BANNIÈRE (HERO) -->
-<div class="p-5 mb-4 rounded-3 text-white shadow-sm" style="background: linear-gradient(135deg, #00497c, #0074c7);">
+<div class="p-4 p-md-5 mb-4 rounded-3 text-white shadow-sm" style="background: linear-gradient(135deg, #00497c, #0074c7);">
     <div class="container-fluid py-3">
-        <h1 class="display-5 fw-bold mb-2">Où allez-vous aujourd'hui ?</h1>
+        <h1 class="display-6 display-md-5 fw-bold mb-2">Où allez-vous aujourd'hui ?</h1>
         <p class="fs-5 mb-0">Trouvez le covoiturage parfait pour vos déplacements professionnels.</p>
     </div>
 </div>
 
-<!-- TITRE DE SECTION -->
-<div class="d-flex justify-content-between align-items-center mb-4">
+<!-- TITRE DE SECTION (Responsive) -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
     <h2 class="h3 mb-0 text-secondary fw-bold">Trajets disponibles</h2>
     <?php if (isset($_SESSION['user'])): ?>
-        <a href="<?= BASE_URL ?>/trip/create" class="btn btn-primary shadow-sm">
+        <a href="<?= BASE_URL ?>/trip/create" class="btn btn-primary shadow-sm w-100 w-md-auto">
             <i class="bi bi-plus-lg me-1"></i> Proposer un trajet
         </a>
     <?php endif; ?>
