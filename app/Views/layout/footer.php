@@ -5,8 +5,11 @@
         <div class="row">
             <!-- Colonne 1 : Logo / Présentation -->
             <div class="col-md-4 mb-3 mb-md-0">
-                <h5 class="text-white fw-bold mb-3">
-                    <i class="bi bi-car-front-fill me-2"></i>Touche Pas Au Klaxon
+                <h5 class="text-white fw-bold mb-3 d-flex align-items-center">
+                    <div class="bg-white rounded-circle d-flex align-items-center justify-content-center me-2 shadow-sm" style="width: 45px; height: 45px; overflow: hidden;">
+                        <img src="<?= BASE_URL ?>/assets/img/Logo.jpg" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    Touche Pas Au Klaxon
                 </h5>
                 <p class="text-white-50 small mb-0">
                     La solution de covoiturage interne pour faciliter vos déplacements professionnels au sein de l'entreprise.

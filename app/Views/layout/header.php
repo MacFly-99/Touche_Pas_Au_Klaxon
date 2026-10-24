@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Touche Pas Au Klaxon</title>
+    <link rel="icon" type="image/jpeg" href="<?= BASE_URL ?>/assets/img/Logo.jpg">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
     <style>
         :root {
             --bs-primary: #0074c7;
@@ -31,13 +35,7 @@
             background-color: #00497c !important;
         }
         body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
             background-color: #f1f8fc;
-        }
-        body > .container {
-            flex: 1;
         }
         .bg-primary {
             background-color: #0074c7 !important;
@@ -48,6 +46,7 @@
         .text-primary {
             color: #0074c7 !important;
         }
+        /* Effet de survol pour les cartes */
         .hover-card {
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             cursor: pointer;
@@ -56,22 +55,32 @@
             transform: translateY(-5px);
             box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
         }
+        /* Footer fixe en bas */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        body > .container {
+            flex: 1;
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm" style="background-color: #00497c;">
+<nav class="navbar navbar-expand-lg navbar-dark shadow-sm" style="background-color: #00497c;">
     <div class="container-fluid">
-        <!-- Logo / Marque -->
-        <a class="navbar-brand fw-bold" href="<?= BASE_URL ?>/">
-            <i class="bi bi-car-front-fill me-1"></i> Touche Pas Au Klaxon
+        <!-- LOGO ET MARQUE -->
+         <a class="navbar-brand fw-bold fs-4 d-flex align-items-center" href="<?= BASE_URL ?>/">
+            <img src="<?= BASE_URL ?>/assets/img/Logo.jpg" alt="Logo" height="50" width="50" class="me-2 rounded-circle shadow-sm" style="object-fit: cover;">
+            Touche Pas Au Klaxon
         </a>
         
-        <!-- Bouton Burger (visible uniquement sur mobile) -->
+        <!-- Bouton Burger (mobile) -->
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Contenu de la navbar (qui se cache sur mobile) -->
+        <!-- Contenu de la navbar -->
         <div class="collapse navbar-collapse" id="navbarContent">
             <ul class="navbar-nav ms-auto align-items-center gap-2 mt-3 mt-lg-0">
                 <?php if (isset($_SESSION['user'])): ?>
@@ -88,8 +97,8 @@
                         </li>
                     <?php else: ?>
                         <!-- Menu Utilisateur -->
-                        <li class="nav-item">
-                            <a href="<?= BASE_URL ?>/trip/create" class="btn btn-success w-100 fw-bold shadow-sm py-2">
+                        <li class="nav-item w-100 text-center text-lg-start w-lg-auto">
+                            <a href="<?= BASE_URL ?>/trip/create" class="btn btn-success fw-bold shadow-sm py-2 px-3 w-100">
                                 <i class="bi bi-plus-circle-fill me-2"></i> Proposer un trajet
                             </a>
                         </li>
@@ -102,7 +111,7 @@
                     
                     <!-- Bouton Déconnexion -->
                     <li class="nav-item w-100 text-center mt-2 mt-lg-0 w-auto">
-                        <a href="<?= BASE_URL ?>/auth/logout" class="btn btn-danger btn-sm px-4">
+                        <a href="<?= BASE_URL ?>/auth/logout" class="btn btn-danger px-4">
                             <i class="bi bi-box-arrow-right me-1"></i> Déconnexion
                         </a>
                     </li>
