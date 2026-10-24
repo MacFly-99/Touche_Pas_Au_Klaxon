@@ -81,9 +81,9 @@ Ouvrir un navigateur : <http://localhost/covoiturage/public/>
 ### 🔐 Identifiants de test
 
 | Rôle              | Email                      | Mot de passe |
-| ----------------- | -------------------------- | ------------ |
-| 👤 Utilisateur     | alexandre.martin@email.fr  | secret       |
-| 👑 Administrateur  | admin@covoiturage.fr       | secret       |
+| ----------------- | -------------------------- | ------------------------- |
+| 👤 Utilisateur     | alexandre.martin@email.fr  | votre_mot_de_passe       |
+| 👑 Administrateur  | admin@covoiturage.fr       | votre_mot_de_passe_admin |
 
 ---
 
@@ -177,7 +177,7 @@ trips (id, departure_agency_id, arrival_agency_id, departure_datetime, arrival_d
 
 ## 🧑‍💻 Auteur
 
-Développé par **Mattéo Ventura** dans le cadre d'un projet CEF – MVC PHP.
+Développé par **Mattéo Ventura** – MVC PHP.
 
 ---
 
