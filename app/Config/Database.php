@@ -3,7 +3,6 @@ namespace App\Config;
 
 use PDO;
 use PDOException;
-use Dotenv\Dotenv;
 
 class Database
 {
@@ -13,15 +12,8 @@ class Database
     {
         if (self::$instance === null) {
             try {
-                $root = dirname(__DIR__, 2);
-
-                // En local : charge le fichier .env.
-                // Sur Render : pas de .env, safeLoad() l'ignore sans planter
-                // et les variables d'environnement de Render sont utilisées.
-                Dotenv::createImmutable($root)->safeLoad();
-
-                // Lit d'abord $_ENV, puis getenv() (variables Render), sinon la valeur par défaut
-                $env = function (string $key, $default = null) {
+                // Fonction helper pour récupérer les variables d'env (ton code actuel)
+                $env = function($key, $default = null) {
                     if (isset($_ENV[$key]) && $_ENV[$key] !== '') {
                         return $_ENV[$key];
                     }
@@ -33,33 +25,47 @@ class Database
                 $db   = $env('DB_NAME');
                 $user = $env('DB_USER');
                 $pass = $env('DB_PASS');
-                $port = $env('DB_PORT', '4000');
+                
+                // On récupère le port. Par défaut 3306 pour le local.
+                $port = $env('DB_PORT', '3306'); 
 
                 if (!$host || !$db || !$user) {
                     throw new PDOException('Variables DB_HOST, DB_NAME ou DB_USER manquantes.');
                 }
 
-                // Certificat CA (Let's Encrypt / ISRG Root X1) à la racine du projet
-                $caPath = $root . '/isrgrootx1.pem';
-
                 $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
 
-                self::$instance = new PDO($dsn, $user, $pass, [
+                // Options PDO de base
+                $options = [
                     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     PDO::ATTR_EMULATE_PREPARES   => false,
-                    // Connexion SSL obligatoire pour TiDB Cloud
-                    PDO::MYSQL_ATTR_SSL_CA       => $caPath,
-                ]);
+                ];
+
+                // =====================================================================
+                // DÉTECTION DE L'ENVIRONNEMENT POUR LE SSL
+                // Si on est en local (localhost), on n'active pas le SSL.
+                // Si on est sur TiDB (distant), on active le SSL avec le certificat.
+                // =====================================================================
+                if ($host !== 'localhost' && $host !== '127.0.0.1') {
+                    $caPath = dirname(__DIR__, 2) . '/isrgrootx1.pem';
+                    if (file_exists($caPath)) {
+                        $options[PDO::MYSQL_ATTR_SSL_CA] = $caPath;
+                    }
+                }
+
+                self::$instance = new PDO($dsn, $user, $pass, $options);
 
             } catch (PDOException $e) {
-                // Le détail va dans les logs Render, pas à l'écran du visiteur
-                error_log('Erreur de connexion BDD : ' . $e->getMessage());
-                http_response_code(500);
-                die('Erreur de connexion à la base de données.');
+                // Si on est dans un navigateur (pas en ligne de commande)
+                if (php_sapi_name() !== 'cli') {
+                    http_response_code(500);
+                }
+                die("Erreur de connexion à la base de données : " . $e->getMessage());
             }
         }
-
+        
         return self::$instance;
     }
 }
+?>
