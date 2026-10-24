@@ -1,48 +1,37 @@
-# On part de l'image officielle PHP 8.3 avec Apache
 FROM php:8.3-apache
 
-# On active le module de réécriture d'URL
 RUN a2enmod rewrite
 
-# =========================================================================
-# INSTALLATION DES OUTILS SYSTÈME INDISPENSABLES
-# (unzip et git pour Composer, libzip-dev pour l'extension zip)
-# =========================================================================
-RUN apt-get update && apt-get install -y \
+# Libs système (gd a besoin de libpng/libjpeg/libfreetype, zip de libzip)
+RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     git \
     libzip-dev \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# =========================================================================
-# INSTALLATION DES EXTENSIONS PHP
-# (on retire mbstring car il est déjà présent, et on ajoute zip)
-# =========================================================================
-RUN docker-php-ext-install pdo pdo_mysql zip exif pcntl bcmath gd
+# Extensions PHP (mbstring est déjà inclus dans l'image officielle)
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j"$(nproc)" pdo pdo_mysql zip exif pcntl bcmath gd
 
-# =========================================================================
-# ON AUTORISE COMPOSER À TOURNER EN ROOT DANS LE CONTAINER
-# =========================================================================
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# On définit le dossier de travail
 WORKDIR /var/www/html
 
-# On copie tout le projet dans le conteneur
-COPY . .
-
-# On installe Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# On installe les dépendances
-RUN composer install --no-dev --optimize-autoloader
+COPY . .
 
-# =========================================================================
-# LA LIGNE MAGIQUE POUR LA SÉCURITÉ (DocumentRoot)
-# =========================================================================
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# DocumentRoot -> /public + autoriser le .htaccess de public/ (réécriture d'URL)
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
+    && sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
+    && printf '<Directory /var/www/html/public>\n    AllowOverride All\n    Require all granted\n</Directory>\n' \
+       > /etc/apache2/conf-available/allow-override.conf \
+    && a2enconf allow-override
 
-# On expose le port 80
 EXPOSE 80
