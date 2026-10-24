@@ -91,21 +91,16 @@
                         <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>/admin/agencies">Agences</a></li>
                         <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>/admin/trips">Trajets</a></li>
                         <li class="nav-item">
-                            <span class="navbar-text text-light fw-bold bg-dark bg-opacity-25 px-3 py-1 rounded-pill">
+                            <a href="<?= BASE_URL ?>/profile" class="btn btn-outline-light btn-sm rounded-pill px-3">
                                 <i class="bi bi-shield-lock me-1"></i> Admin: <?= htmlspecialchars($_SESSION['user']['first_name']) ?>
-                            </span>
+                            </a>
                         </li>
                     <?php else: ?>
                         <!-- Menu Utilisateur -->
                         <li class="nav-item w-100 text-center text-lg-start w-lg-auto">
-                            <a href="<?= BASE_URL ?>/trip/create" class="btn btn-success fw-bold shadow-sm py-2 px-3 w-100">
-                                <i class="bi bi-plus-circle-fill me-2"></i> Proposer un trajet
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <span class="navbar-text text-light fw-bold px-3">
+                            <a href="<?= BASE_URL ?>/profile" class="btn btn-outline-light btn-sm rounded-pill px-3">
                                 <i class="bi bi-person-circle me-1"></i> <?= htmlspecialchars($_SESSION['user']['first_name']) ?>
-                            </span>
+                            </a>
                         </li>
                     <?php endif; ?>
                     
