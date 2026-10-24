@@ -76,5 +76,13 @@ class User extends Model
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$id]);
     }
+
+    // Met à jour le mot de passe d'un utilisateur
+    public function updatePassword($id, $newPasswordHash)
+    {
+        $sql = "UPDATE users SET password_hash = ? WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$newPasswordHash, $id]);
+    }
 }
 ?>
