@@ -59,30 +59,40 @@
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #00497c;">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #00497c;">
     <div class="container-fluid">
         <a class="navbar-brand" href="<?= BASE_URL ?>/">Touche Pas Au Klaxon</a>
+        
         <div class="d-flex align-items-center">
             <?php if (isset($_SESSION['user'])): ?>
+                
                 <?php if ($_SESSION['user']['is_admin'] == 1): ?>
+                    <!-- Menu Admin -->
                     <ul class="navbar-nav me-3">
                         <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>/admin/users">Utilisateurs</a></li>
                         <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>/admin/agencies">Agences</a></li>
                         <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>/admin/trips">Trajets</a></li>
                     </ul>
                     <span class="navbar-text text-light me-3">
-                        Bonjour <?= htmlspecialchars($_SESSION['user']['first_name'] . ' ' . $_SESSION['user']['last_name']) ?>
+                        <i class="bi bi-shield-lock me-1"></i> Admin: <?= htmlspecialchars($_SESSION['user']['first_name']) ?>
                     </span>
                 <?php else: ?>
-                    <a href="<?= BASE_URL ?>/trip/create" class="btn btn-outline-light me-2">Proposer un trajet</a>
+                    <!-- Menu Utilisateur -->
+                    <a href="<?= BASE_URL ?>/trip/create" class="btn btn-outline-light btn-sm me-3">
+                        <i class="bi bi-plus-circle me-1"></i> Proposer un trajet
+                    </a>
                     <span class="navbar-text text-light me-3">
-                        <?= htmlspecialchars($_SESSION['user']['first_name'] . ' ' . $_SESSION['user']['last_name']) ?>
+                        <i class="bi bi-person-circle me-1"></i> <?= htmlspecialchars($_SESSION['user']['first_name'] . ' ' . $_SESSION['user']['last_name']) ?>
                     </span>
                 <?php endif; ?>
-                <a href="<?= BASE_URL ?>/auth/logout" class="btn btn-danger">Déconnexion</a>
-            <?php else: ?>
-                <a href="<?= BASE_URL ?>/auth/login" class="btn btn-primary">Connexion</a>
+                
+                <!-- Bouton Déconnexion (pour tout le monde) -->
+                <a href="<?= BASE_URL ?>/auth/logout" class="btn btn-danger">
+                    <i class="bi bi-box-arrow-right me-1"></i> Déconnexion
+                </a>
+
             <?php endif; ?>
+            <!-- Note : on ne met rien pour les visiteurs, car ils sont sur la page de login -->
         </div>
     </div>
 </nav>
