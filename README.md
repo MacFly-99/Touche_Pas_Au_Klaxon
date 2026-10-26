@@ -237,7 +237,7 @@ Toutes les clés étrangères sont définies avec `ON DELETE CASCADE` :
 
 ## 🧑‍💻 Auteur
 
-Développé par **Mattéo Ventura** – Projet CEF (MVC PHP).
+Développé par **Mattéo Ventura** – (MVC PHP).
 
 ---
 
