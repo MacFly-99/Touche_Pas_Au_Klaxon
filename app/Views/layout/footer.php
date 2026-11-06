@@ -17,7 +17,7 @@
             </div>
 
             <!-- Colonne 2 : Liens rapides -->
-            <div class="col-md-4 mb-3 mb-md-0">
+            <div class="col-md-2 mb-3 mb-md-0">
                 <h6 class="text-white text-uppercase fw-bold mb-3">Navigation</h6>
                 <ul class="list-unstyled mb-0">
                     <li class="mb-2">
@@ -36,7 +36,7 @@
             </div>
 
             <!-- Colonne 3 : Informations -->
-            <div class="col-md-4">
+            <div class="col-md-3 mb-3 mb-md-0">
                 <h6 class="text-white text-uppercase fw-bold mb-3">Informations</h6>
                 <p class="text-white-50 small mb-1">
                     <i class="bi bi-code-slash me-2"></i>Développé en MVC PHP
@@ -44,6 +44,30 @@
                 <p class="text-white-50 small mb-0">
                     <i class="bi bi-person-badge me-2"></i>Projet de MacFly-99
                 </p>
+            </div>
+
+            <!-- Colonne 4 : Liens Légaux -->
+            <div class="col-md-3 mb-3 mb-md-0">
+                <h6 class="text-white text-uppercase fw-bold mb-3">Légal</h6>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <a href="<?= BASE_URL ?>/legal/notices" class="text-white-50 text-decoration-none hover-white">
+                            <i class="bi bi-file-earmark-text me-1"></i>Mentions légales
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="<?= BASE_URL ?>/legal/gtc" class="text-white-50 text-decoration-none hover-white">
+                            <i class="bi bi-shield-check me-1"></i>CGV
+                        </a>
+                    </li>
+                    <!-- Lien Support commenté pour le moment (perspectives d'evolution)
+                    <li class="mb-2">
+                        <a href="<?= BASE_URL ?>/support" class="text-white-50 text-decoration-none hover-white">
+                            <i class="bi bi-life-preserver me-1"></i>Support
+                        </a>
+                    </li>
+                    -->
+                </ul>
             </div>
         </div>
 
