@@ -21,7 +21,7 @@
         <tbody>
             <?php foreach (($users ?? []) as $user): ?>
                 <tr>
-                    <td><?= $user['id'] ?></td>
+                    <td><?= (int)$user['id'] ?></td>
                     <td><strong><?= htmlspecialchars($user['last_name']) ?></strong></td>
                     <td><?= htmlspecialchars($user['first_name']) ?></td>
                     <td><?= htmlspecialchars($user['email']) ?></td>
@@ -52,7 +52,7 @@
                                     <button type="button" class="btn btn-outline-secondary btn-sm w-100" 
                                             data-bs-toggle="modal" 
                                             data-bs-target="#roleModal"
-                                            data-user-id="<?= $user['id'] ?>"
+                                            data-user-id="<?= (int)$user['id'] ?>"
                                             data-user-name="<?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>"
                                             data-action="rétrograder"
                                             data-btn-class="btn-secondary">
@@ -62,7 +62,7 @@
                                     <button type="button" class="btn btn-outline-success btn-sm w-100" 
                                             data-bs-toggle="modal" 
                                             data-bs-target="#roleModal"
-                                            data-user-id="<?= $user['id'] ?>"
+                                            data-user-id="<?= (int)$user['id'] ?>"
                                             data-user-name="<?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>"
                                             data-action="promouvoir"
                                             data-btn-class="btn-success">
@@ -75,7 +75,7 @@
                                         class="btn btn-danger btn-sm w-100" 
                                         data-bs-toggle="modal" 
                                         data-bs-target="#deleteUserModal"
-                                        data-user-id="<?= $user['id'] ?>"
+                                        data-user-id="<?= (int)$user['id'] ?>"
                                         data-user-name="<?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>">
                                     <i class="bi bi-trash"></i> Supprimer
                                 </button>
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var userName = button.getAttribute('data-user-name');
         
         var modalBodyInput = deleteUserModal.querySelector('#deleteUserName');
-        modalBodyInput.innerHTML = userName + '&nbsp;?';
+        modalBodyInput.textContent = userName + ' ?';
         
         var form = deleteUserModal.querySelector('#deleteUserForm');
         form.action = '<?= BASE_URL ?>/admin/userDelete/' + userId;

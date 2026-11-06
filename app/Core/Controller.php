@@ -9,7 +9,14 @@ class Controller
         $data['flash_success'] = $this->getFlash('success');
         $data['flash_error']   = $this->getFlash('error');
 
-        extract($data);
+        // SÉCURITÉ : Empêcher extract() d'écraser des variables critiques
+        $protected = ['view', 'data', 'this', 'protected'];
+        foreach ($data as $key => $value) {
+            if (!in_array($key, $protected)) {
+                $$key = $value;
+            }
+        }
+
         include ROOT . '/app/Views/layout/header.php';
         include ROOT . '/app/Views/' . $view . '.php';
         include ROOT . '/app/Views/layout/footer.php';
@@ -19,7 +26,7 @@ class Controller
     {
         // Si l'URL ne commence pas par http:// ou https://, on ajoute BASE_URL
         if (!preg_match('#^https?://#', $url)) {
-        $url = BASE_URL . $url;
+            $url = BASE_URL . $url;
         }
         header('Location: ' . $url);
         exit;
@@ -40,7 +47,7 @@ class Controller
         return null;
     }
 
-     /**
+    /**
      * Vérifie la validité du token CSRF
      * Si invalide, arrête le script avec une erreur 403
      */
@@ -49,12 +56,11 @@ class Controller
         // On récupère le token envoyé par le formulaire
         $token = $_POST['csrf_token'] ?? '';
         
-        // On le compare avec celui de la session en utilisant hash_equals (pour éviter les attaques temporelles)
-        if (empty($token) || !hash_equals($_SESSION['csrf_token'], $token)) {
+        // SÉCURITÉ : On vérifie que le token existe en session AVANT de comparer
+        if (empty($token) || empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $token)) {
             http_response_code(403);
             die("Erreur de sécurité : Jeton CSRF invalide ou expiré. Veuillez rafraîchir la page.");
         }
     }
 }
-
 ?>

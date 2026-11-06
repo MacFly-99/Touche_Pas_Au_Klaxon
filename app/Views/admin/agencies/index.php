@@ -14,14 +14,14 @@
         <tbody>
             <?php foreach (($agencies ?? []) as $agency): ?>
                 <tr>
-                    <td><?= $agency['id'] ?></td>
+                    <td><?= (int)$agency['id'] ?></td>
                     <td><?= htmlspecialchars($agency['name']) ?></td>
                     <td>
-                        <a href="<?= BASE_URL ?>/admin/agencyEdit/<?= $agency['id'] ?>" class="btn btn-warning btn-sm">Modifier</a>
+                        <a href="<?= BASE_URL ?>/admin/agencyEdit/<?= (int)$agency['id'] ?>" class="btn btn-warning btn-sm">Modifier</a>
                         <button type="button" class="btn btn-danger btn-sm" 
                         data-bs-toggle="modal" 
                         data-bs-target="#deleteAgencyModal"
-                        data-agency-id="<?= $agency['id'] ?>"
+                        data-agency-id="<?= (int)$agency['id'] ?>"
                         data-agency-name="<?= htmlspecialchars($agency['name']) ?>">
                         Supprimer
                         </button>

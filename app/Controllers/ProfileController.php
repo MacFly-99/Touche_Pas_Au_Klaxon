@@ -9,7 +9,6 @@ class ProfileController extends Controller
     // Affiche la page de profil
     public function index()
     {
-        // Sécurité : Il faut être connecté
         if (!isset($_SESSION['user'])) {
             $this->redirect('/auth/login');
             return;
@@ -21,7 +20,6 @@ class ProfileController extends Controller
     // Traite le formulaire de changement de mot de passe
     public function updatePassword()
     {
-        // 1. Vérifications de base
         if (!isset($_SESSION['user'])) {
             $this->redirect('/auth/login');
             return;
@@ -34,7 +32,6 @@ class ProfileController extends Controller
 
         $this->verifyCsrfToken();
 
-        // 2. Récupération des données
         $currentPassword = $_POST['current_password'] ?? '';
         $newPassword = $_POST['new_password'] ?? '';
         $confirmPassword = $_POST['confirm_password'] ?? '';
@@ -42,10 +39,10 @@ class ProfileController extends Controller
         $errors = [];
         $userModel = new User();
         
-        // On récupère l'utilisateur en base pour avoir son hash actuel
-        $user = $userModel->findById($_SESSION['user']['id']);
+        // On force l'ID en entier pour être sûr
+        $userId = (int)$_SESSION['user']['id'];
+        $user = $userModel->findById($userId);
 
-        // 3. Validation
         if (!password_verify($currentPassword, $user['password_hash'])) {
             $errors[] = "Votre mot de passe actuel est incorrect.";
         }
@@ -62,7 +59,6 @@ class ProfileController extends Controller
             $errors[] = "Le nouveau mot de passe doit être différent de l'ancien.";
         }
 
-        // 4. S'il y a des erreurs, on réaffiche la page
         if (!empty($errors)) {
             $this->render('profile/index', [
                 'user' => $_SESSION['user'],
@@ -71,10 +67,9 @@ class ProfileController extends Controller
             return;
         }
 
-        // 5. Tout est bon : on hache et on met à jour
         $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
 
-        if ($userModel->updatePassword($user['id'], $newHash)) {
+        if ($userModel->updatePassword($userId, $newHash)) {
             $_SESSION['flash']['success'] = "Votre mot de passe a été modifié avec succès !";
             $this->redirect('/profile');
         } else {

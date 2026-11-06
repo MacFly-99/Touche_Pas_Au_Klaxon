@@ -6,19 +6,16 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    // Affiche le formulaire de connexion ou traite le formulaire
     public function login()
     {
-        // Si déjà connecté, on redirige vers l'accueil
         if (isset($_SESSION['user'])) {
             $this->redirect('/');
             return;
         }
 
-        // Si c'est une soumission de formulaire (POST)
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
-        $this->verifyCsrfToken();
+            $this->verifyCsrfToken();
         
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
@@ -27,28 +24,30 @@ class AuthController extends Controller
             $user = $userModel->verifyPassword($email, $password);
 
             if ($user) {
-                
                 session_regenerate_id(true);
-
-                // Connexion réussie
                 $_SESSION['user'] = $user;
                 $this->redirect('/');
             } else {
-                // Échec : on affiche le formulaire avec une erreur
                 $this->render('auth/login', ['error' => 'Invalid email or password']);
             }
         } else {
-            // Affichage du formulaire (GET)
             $this->render('auth/login');
         }
     }
 
-    // Déconnexion
     public function logout()
     {
+        // Supprimer le cookie de session du navigateur
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+        
         session_destroy();
         $this->redirect('/');
     }
 }
-
 ?>

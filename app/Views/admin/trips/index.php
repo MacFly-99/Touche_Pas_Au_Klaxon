@@ -18,19 +18,21 @@
         <tbody>
             <?php foreach ($trips ?? [] as $trip): ?>
                 <tr>
-                    <td><?= $trip['id'] ?></td>
+                    <!-- (int) sur l'ID -->
+                    <td><?= (int)$trip['id'] ?></td>
                     <td><?= htmlspecialchars($trip['departure_name']) ?></td>
                     <td><?= htmlspecialchars($trip['arrival_name']) ?></td>
                     <td><?= date('d/m/Y H:i', strtotime($trip['departure_datetime'])) ?></td>
                     <td><?= date('d/m/Y H:i', strtotime($trip['arrival_datetime'])) ?></td>
-                    <td><?= $trip['total_seats'] ?></td>
-                    <td><?= $trip['available_seats'] ?></td>
+                    <!-- CORRECTION : (int) sur les places -->
+                    <td><?= (int)$trip['total_seats'] ?></td>
+                    <td><?= (int)$trip['available_seats'] ?></td>
                     <td><?= htmlspecialchars($trip['author_first_name'] . ' ' . $trip['author_last_name']) ?></td>
                     <td>
                         <button type="button" class="btn btn-danger btn-sm" 
                         data-bs-toggle="modal" 
                         data-bs-target="#deleteTripModal"
-                        data-trip-id="<?= $trip['id'] ?>">
+                        data-trip-id="<?= (int)$trip['id'] ?>">
                         Supprimer
                         </button>
                 </td>
