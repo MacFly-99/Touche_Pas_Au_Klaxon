@@ -12,7 +12,7 @@ class Database
     {
         if (self::$instance === null) {
             try {
-                // Fonction helper pour récupérer les variables d'env (ton code actuel)
+                // Fonction helper pour récupérer les variables d'env
                 $env = function($key, $default = null) {
                     if (isset($_ENV[$key]) && $_ENV[$key] !== '') {
                         return $_ENV[$key];
@@ -42,11 +42,7 @@ class Database
                     PDO::ATTR_EMULATE_PREPARES   => false,
                 ];
 
-                // =====================================================================
                 // DÉTECTION DE L'ENVIRONNEMENT POUR LE SSL
-                // Si on est en local (localhost), on n'active pas le SSL.
-                // Si on est sur TiDB (distant), on active le SSL avec le certificat.
-                // =====================================================================
                 if ($host !== 'localhost' && $host !== '127.0.0.1') {
                     $caPath = dirname(__DIR__, 2) . '/isrgrootx1.pem';
                     if (file_exists($caPath)) {
@@ -55,16 +51,19 @@ class Database
                 }
 
                 self::$instance = new PDO($dsn, $user, $pass, $options);
-
+                
             } catch (PDOException $e) {
-                // Si on est dans un navigateur (pas en ligne de commande)
+                // On log l'erreur réelle pour le développeur (dans les logs de Render)
+                error_log("Erreur de connexion BDD : " . $e->getMessage());
+                
+                // On affiche un message générique à l'utilisateur
                 if (php_sapi_name() !== 'cli') {
                     http_response_code(500);
                 }
-                die("Erreur de connexion à la base de données : " . $e->getMessage());
+                die("Une erreur interne est survenue. Veuillez réessayer plus tard.");
             }
         }
-        
+         
         return self::$instance;
     }
 }

@@ -4,6 +4,36 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use App\Core\Router;
 
 // ==========================================
+// 0. CHARGEMENT DU FICHIER .ENV
+// ==========================================
+// On lit le fichier .env situé à la racine du projet
+$envPath = dirname(__DIR__) . '/.env';
+if (file_exists($envPath)) {
+    $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        // Ignorer les commentaires
+        if (strpos(trim($line), '#') === 0) {
+            continue;
+        }
+        // Séparer la clé et la valeur
+        if (strpos($line, '=') !== false) {
+            list($key, $value) = explode('=', $line, 2);
+            $key = trim($key);
+            $value = trim($value);
+            
+            // Supprimer les guillemets éventuels autour de la valeur
+            $value = trim($value, '"\''); 
+            
+            // Définir la variable d'environnement si elle n'existe pas déjà
+            if (!getenv($key)) {
+                putenv("$key=$value");
+                $_ENV[$key] = $value;
+            }
+        }
+    }
+}
+
+// ==========================================
 // 1. MASQUER LES ERREURS (Sécurité)
 // ==========================================
 ini_set('display_errors', 0);
@@ -13,36 +43,33 @@ error_reporting(E_ALL);
 header_remove('X-Powered-By');
 
 // ==========================================
-// 2. EN-TÊTES DE SÉCURITÉ HTTP
-// ==========================================
-// Anti-Clickjacking
-header("X-Frame-Options: DENY");
-// Anti-MIME Sniffing
-header("X-Content-Type-Options: nosniff");
-// Politique de référent
-header("Referrer-Policy: strict-origin-when-cross-origin");
-// Content Security Policy (CSP)
-header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://cdn.jsdelivr.net;");
-
-// ==========================================
-// 3. SÉCURISATION DES SESSIONS
+// 2. SÉCURISATION DES SESSIONS
 // ==========================================
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_only_cookies', 1);
+ini_set('session.cookie_samesite', 'Lax');
+
+// Détection de l'environnement (Local ou Production)
+$isLocal = isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1');
+
+if (!$isLocal) {
+    // On force le cookie Secure UNIQUEMENT en production (sur Render)
+    ini_set('session.cookie_secure', 1); 
+}
+
 session_start();
 
 // ==========================================
-// 4. GÉNÉRATION DU TOKEN CSRF
+// 3. GÉNÉRATION DU TOKEN CSRF
 // ==========================================
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
 // ==========================================
-// 5. CONSTANTES ET ROUTAGE
+// 4. CONSTANTES ET ROUTAGE
 // ==========================================
-// DÉTECTION DYNAMIQUE DE L'URL DE BASE
-if (isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1')) {
+if ($isLocal) {
     // Environnement local (XAMPP)
     define('BASE_URL', '/covoiturage/public');
 } else {

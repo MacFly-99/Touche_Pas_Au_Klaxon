@@ -1,8 +1,35 @@
+# Bloquer l'accès aux fichiers cachés (ex: .env, .git)
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# ==========================================================
+# SÉCURITÉ - Injection des en-têtes HTTP manquants
+# ==========================================================
+<IfModule mod_headers.c>
+    # 1. Force le navigateur à rester en HTTPS pendant 1 an
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    # 2. Empêche l'inclusion de ton site dans une iframe (Anti-Clickjacking)
+    Header always set X-Frame-Options "SAMEORIGIN"
+
+    # 3. Empêche le navigateur de "deviner" le type MIME (Anti-XSS)
+    Header always set X-Content-Type-Options "nosniff"
+
+    # 4. Contrôle les informations envoyées dans le referer
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # 5. Restreint l'accès aux API sensibles (caméra, micro, géoloc)
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+
+    # 6. Politique de sécurité du contenu (CSP)
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; img-src 'self' data: https:;"
+</IfModule>
+
+# ==========================================================
+# ROUTAGE (Réécriture d'URL)
+# ==========================================================
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [QSA,L]
-
-<FilesMatch "^\.">
-    Require all denied
-</FilesMatch>

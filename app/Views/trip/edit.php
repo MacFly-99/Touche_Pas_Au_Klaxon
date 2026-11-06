@@ -44,7 +44,7 @@ if (!isset($user) || !is_array($user)) {
                     </div>
                 <?php endif; ?>
 
-                <form method="POST" action="<?= BASE_URL ?>/trip/update/<?= $trip['id'] ?>">
+                <form method="POST" action="<?= BASE_URL ?>/trip/update/<?= (int)$trip['id'] ?>">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
 
                     <!-- INFOS UTILISATEUR (Rappel) -->
@@ -72,7 +72,7 @@ if (!isset($user) || !is_array($user)) {
                                 <select class="form-select" id="departure_agency" name="departure_agency" required>
                                     <option value="" disabled <?= !isset($old['departure_agency']) ? 'selected' : '' ?>>Choisir...</option>
                                     <?php foreach ($agencies as $agency): ?>
-                                        <option value="<?= $agency['id'] ?>" 
+                                        <option value="<?= (int)$agency['id'] ?>" 
                                             <?= (isset($old['departure_agency']) && $old['departure_agency'] == $agency['id']) 
                                                 || (!isset($old) && $trip['departure_agency_id'] == $agency['id']) 
                                                 ? 'selected' : '' ?>>
@@ -148,7 +148,7 @@ if (!isset($user) || !is_array($user)) {
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="number" class="form-control" id="total_seats" name="total_seats" 
-                                       min="1" value="<?= isset($old['total_seats']) ? htmlspecialchars($old['total_seats']) : $trip['total_seats'] ?>" required>
+                                       min="1" value="<?= isset($old['total_seats']) ? htmlspecialchars((string)$old['total_seats']) : htmlspecialchars((string)$trip['total_seats']) ?>" required>
                                 <label for="total_seats"><i class="bi bi-person-plus me-1"></i>Places disponibles *</label>
                             </div>
                         </div>

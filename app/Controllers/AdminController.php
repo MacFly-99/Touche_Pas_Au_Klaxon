@@ -10,7 +10,6 @@ class AdminController extends Controller
 {
     /**
      * Vérifie que l'utilisateur est connecté ET administrateur
-     * Si ce n'est pas le cas, redirige vers la connexion
      */
     private function checkAdmin()
     {
@@ -29,14 +28,12 @@ class AdminController extends Controller
         $this->render('admin/users/index', ['users' => $users]);
     }
 
-    // Affiche le formulaire de création d'utilisateur
     public function userCreate()
     {
         $this->checkAdmin();
         $this->render('admin/users/create');
     }
 
-    // Traite la création de l'utilisateur
     public function userStore()
     {
         $this->checkAdmin();
@@ -46,10 +43,8 @@ class AdminController extends Controller
             return;
         }
 
-        // 1. Vérification CSRF
         $this->verifyCsrfToken();
 
-        // 2. Récupération et nettoyage des données
         $lastName = trim($_POST['last_name'] ?? '');
         $firstName = trim($_POST['first_name'] ?? '');
         $email = trim($_POST['email'] ?? '');
@@ -57,7 +52,6 @@ class AdminController extends Controller
         $password = $_POST['password'] ?? '';
         $isAdmin = (int)($_POST['is_admin'] ?? 0);
 
-        // 3. Validation
         $errors = [];
         
         if (empty($lastName) || empty($firstName) || empty($email) || empty($phone) || empty($password)) {
@@ -74,12 +68,10 @@ class AdminController extends Controller
 
         $userModel = new User();
         
-        // Vérifier si l'email existe déjà
         if ($userModel->findByEmail($email)) {
             $errors[] = "Cet email est déjà utilisé par un autre compte.";
         }
 
-        // S'il y a des erreurs, on renvoie le formulaire avec les données saisies
         if (!empty($errors)) {
             $this->render('admin/users/create', [
                 'errors' => $errors,
@@ -88,10 +80,8 @@ class AdminController extends Controller
             return;
         }
 
-        // 4. Hachage du mot de passe (TRÈS IMPORTANT)
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-        // 5. Insertion en base
         $data = [
             'last_name' => $lastName,
             'first_name' => $firstName,
@@ -107,13 +97,12 @@ class AdminController extends Controller
             $_SESSION['flash']['error'] = "Une erreur est survenue lors de la création de l'utilisateur.";
         }
 
-        // 6. Redirection
         $this->redirect('/admin/users');
     }
 
-        // Change le rôle d'un utilisateur (Admin <-> User)
     public function userToggleRole($id)
     {
+        $id = (int)$id; // Sécurité ID
         $this->checkAdmin();
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -121,17 +110,14 @@ class AdminController extends Controller
             return;
         }
 
-        // 1. Vérification CSRF
         $this->verifyCsrfToken();
 
-        // 2. Empêcher l'admin de changer son propre rôle
         if ($id == $_SESSION['user']['id']) {
             $_SESSION['flash']['error'] = "Vous ne pouvez pas changer votre propre rôle.";
             $this->redirect('/admin/users');
             return;
         }
 
-        // 3. Récupérer l'utilisateur cible
         $userModel = new User();
         $user = $userModel->findById($id);
 
@@ -141,10 +127,8 @@ class AdminController extends Controller
             return;
         }
 
-        // 4. Inverser le rôle (si 1 -> 0, si 0 -> 1)
         $newRole = $user['is_admin'] == 1 ? 0 : 1;
 
-        // 5. Mettre à jour en base
         if ($userModel->updateRole($id, $newRole)) {
             $roleName = $newRole == 1 ? "Administrateur" : "Utilisateur standard";
             $_SESSION['flash']['success'] = "Le rôle de " . htmlspecialchars($user['first_name']) . " a été changé en : $roleName.";
@@ -155,20 +139,18 @@ class AdminController extends Controller
         $this->redirect('/admin/users');
     }
 
-    // --- Suppression d'un utilisateur ---
     public function userDelete($id)
     {
+        $id = (int)$id; // Sécurité ID
         $this->checkAdmin();
         
-        // Vérification de la méthode POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/admin/users');
             return;
         }
 
-            $this->verifyCsrfToken(); 
+        $this->verifyCsrfToken(); 
 
-        // Empêcher l'admin de supprimer son propre compte
         if (isset($_SESSION['user']['id']) && $id == $_SESSION['user']['id']) {
             $_SESSION['flash']['error'] = "Vous ne pouvez pas supprimer votre propre compte.";
             $this->redirect('/admin/users');
@@ -208,29 +190,32 @@ class AdminController extends Controller
             return;
         }
 
+        $this->verifyCsrfToken(); // AJOUT SÉCURITÉ
+
         $name = trim($_POST['name'] ?? '');
         if (empty($name)) {
-            $_SESSION['flash']['error'] = "Agency name is required.";
+            $_SESSION['flash']['error'] = "Le nom de l'agence est requis.";
             $this->redirect('/admin/agencyCreate');
             return;
         }
 
         $agencyModel = new Agency();
         if ($agencyModel->insert($name)) {
-            $_SESSION['flash']['success'] = "Agency created successfully.";
+            $_SESSION['flash']['success'] = "Agence créée avec succès.";
         } else {
-            $_SESSION['flash']['error'] = "Error creating agency. It may already exist.";
+            $_SESSION['flash']['error'] = "Erreur lors de la création. Elle existe peut-être déjà.";
         }
         $this->redirect('/admin/agencies');
     }
 
     public function agencyEdit($id)
     {
+        $id = (int)$id; // Sécurité ID
         $this->checkAdmin();
         $agencyModel = new Agency();
         $agency = $agencyModel->find($id);
         if (!$agency) {
-            $_SESSION['flash']['error'] = "Agency not found.";
+            $_SESSION['flash']['error'] = "Agence introuvable.";
             $this->redirect('/admin/agencies');
             return;
         }
@@ -239,41 +224,47 @@ class AdminController extends Controller
 
     public function agencyUpdate($id)
     {
+        $id = (int)$id; // Sécurité ID
         $this->checkAdmin();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/admin/agencies');
             return;
         }
 
+        $this->verifyCsrfToken(); // AJOUT SÉCURITÉ
+
         $name = trim($_POST['name'] ?? '');
         if (empty($name)) {
-            $_SESSION['flash']['error'] = "Agency name is required.";
+            $_SESSION['flash']['error'] = "Le nom de l'agence est requis.";
             $this->redirect('/admin/agencyEdit/' . $id);
             return;
         }
 
         $agencyModel = new Agency();
         if ($agencyModel->update($id, $name)) {
-            $_SESSION['flash']['success'] = "Agency updated successfully.";
+            $_SESSION['flash']['success'] = "Agence mise à jour avec succès.";
         } else {
-            $_SESSION['flash']['error'] = "Error updating agency.";
+            $_SESSION['flash']['error'] = "Erreur lors de la mise à jour de l'agence.";
         }
         $this->redirect('/admin/agencies');
     }
 
     public function agencyDelete($id)
     {
+        $id = (int)$id; // Sécurité ID
         $this->checkAdmin();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/admin/agencies');
             return;
         }
 
+        $this->verifyCsrfToken(); // AJOUT SÉCURITÉ
+
         $agencyModel = new Agency();
         if ($agencyModel->delete($id)) {
-            $_SESSION['flash']['success'] = "Agency deleted successfully.";
+            $_SESSION['flash']['success'] = "Agence supprimée avec succès.";
         } else {
-            $_SESSION['flash']['error'] = "Error deleting agency.";
+            $_SESSION['flash']['error'] = "Erreur lors de la suppression de l'agence.";
         }
         $this->redirect('/admin/agencies');
     }
@@ -289,17 +280,20 @@ class AdminController extends Controller
 
     public function tripDelete($id)
     {
+        $id = (int)$id; // Sécurité ID
         $this->checkAdmin();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/admin/trips');
             return;
         }
 
+        $this->verifyCsrfToken(); // AJOUT SÉCURITÉ
+
         $tripModel = new Trip();
         if ($tripModel->delete($id)) {
-            $_SESSION['flash']['success'] = "Trip deleted successfully.";
+            $_SESSION['flash']['success'] = "Trajet supprimé avec succès.";
         } else {
-            $_SESSION['flash']['error'] = "Error deleting trip.";
+            $_SESSION['flash']['error'] = "Erreur lors de la suppression du trajet.";
         }
         $this->redirect('/admin/trips');
     }

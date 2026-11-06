@@ -7,7 +7,6 @@ use App\Models\Agency;
 
 class TripController extends Controller
 {
-    // Affiche le formulaire de création
     public function create()
     {
         if (!isset($_SESSION['user'])) {
@@ -24,7 +23,6 @@ class TripController extends Controller
         ]);
     }
 
-    // Traite le formulaire (insertion en base)
     public function store()
     {
         if (!isset($_SESSION['user'])) {
@@ -32,16 +30,13 @@ class TripController extends Controller
             return;
         }
 
-        // 1. Vérification de la méthode POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/');
             return;
         }
 
-        // 2. VÉRIFICATION CSRF
         $this->verifyCsrfToken();
 
-        // Récupération des données du formulaire
         $departureAgency = (int)($_POST['departure_agency'] ?? 0);
         $arrivalAgency = (int)($_POST['arrival_agency'] ?? 0);
         $departureDate = $_POST['departure_datetime'] ?? '';
@@ -53,7 +48,6 @@ class TripController extends Controller
         $departureDatetime = $departureDate . ' ' . $departureTime;
         $arrivalDatetime = $arrivalDate . ' ' . $arrivalTime;
 
-        // --- Validation ---
         $errors = [];
 
         if ($departureAgency === $arrivalAgency) {
@@ -84,7 +78,6 @@ class TripController extends Controller
             return;
         }
 
-        // --- Insertion en base ---
         $tripModel = new Trip();
         $data = [
             'departure_agency_id' => $departureAgency,
@@ -92,7 +85,7 @@ class TripController extends Controller
             'departure_datetime' => $departureDatetime,
             'arrival_datetime' => $arrivalDatetime,
             'total_seats' => $totalSeats,
-            'available_seats' => $totalSeats, // Initialement, toutes les places sont dispos
+            'available_seats' => $totalSeats,
             'user_id' => $_SESSION['user']['id']
         ];
 
@@ -108,18 +101,20 @@ class TripController extends Controller
     // Affiche les détails (Appel AJAX pour la modale)
     public function details($id)
     {
+        $id = (int)$id; // Sécurité ID
+
+        // SÉCURITÉ : On vérifie que l'utilisateur est connecté
+        if (!isset($_SESSION['user'])) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Non autorisé']);
+            exit;
+        }
+
         $tripModel = new Trip();
         $trip = $tripModel->findById($id);
         
         if ($trip) {
-            // On échappe les données texte avant de les envoyer au JS
-            $trip['author_first_name'] = htmlspecialchars($trip['author_first_name'] ?? '', ENT_QUOTES, 'UTF-8');
-            $trip['author_last_name']  = htmlspecialchars($trip['author_last_name'] ?? '', ENT_QUOTES, 'UTF-8');
-            $trip['author_phone']      = htmlspecialchars($trip['author_phone'] ?? '', ENT_QUOTES, 'UTF-8');
-            $trip['author_email']      = htmlspecialchars($trip['author_email'] ?? '', ENT_QUOTES, 'UTF-8');
-            $trip['departure_name']    = htmlspecialchars($trip['departure_name'] ?? '', ENT_QUOTES, 'UTF-8');
-            $trip['arrival_name']      = htmlspecialchars($trip['arrival_name'] ?? '', ENT_QUOTES, 'UTF-8');
-
+            // On laisse le JS gérer l'échappement HTML, on envoie les données brutes
             header('Content-Type: application/json');
             echo json_encode($trip);
         } else {
@@ -129,9 +124,9 @@ class TripController extends Controller
         exit;
     }
 
-    // Affiche le formulaire de modification
     public function edit($id)
     {
+        $id = (int)$id; // Sécurité ID
         if (!isset($_SESSION['user'])) {
             $this->redirect('/auth/login');
             return;
@@ -162,9 +157,9 @@ class TripController extends Controller
         ]);
     }
 
-    // Traite le formulaire de modification
     public function update($id)
     {
+        $id = (int)$id; // Sécurité ID
         if (!isset($_SESSION['user'])) {
             $this->redirect('/auth/login');
             return;
@@ -175,7 +170,6 @@ class TripController extends Controller
             return;
         }
 
-        // --- AJOUT VÉRIFICATION ---
         $this->verifyCsrfToken();
 
         $tripModel = new Trip();
@@ -249,9 +243,9 @@ class TripController extends Controller
         $this->redirect('/');
     }
 
-    // Suppression d'un trajet
     public function delete($id)
     {
+        $id = (int)$id; // Sécurité ID
         if (!isset($_SESSION['user'])) {
             $this->redirect('/auth/login');
             return;
@@ -262,7 +256,6 @@ class TripController extends Controller
             return;
         }
 
-        // --- AJOUT VÉRIFICATION CSRF ---
         $this->verifyCsrfToken();
 
         $tripModel = new Trip();
