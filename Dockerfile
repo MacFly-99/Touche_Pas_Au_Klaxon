@@ -1,6 +1,6 @@
 FROM php:8.3-apache
 
-RUN a2enmod rewrite
+RUN a2enmod rewrite headers
 
 # Libs système (gd a besoin de libpng/libjpeg/libfreetype, zip de libzip)
 RUN apt-get update && apt-get install -y --no-install-recommends \
