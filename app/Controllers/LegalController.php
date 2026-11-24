@@ -11,10 +11,10 @@ class LegalController extends Controller
         $this->render('legal/notices');
     }
 
-    // Méthode pour la page CGV (ou GTC)
-    public function gtc()
+    // Méthode pour la page Politique de Confidentialité
+    public function privacyPolicy()
     {
-        $this->render('legal/gtc');
+        $this->render('legal/privacy-policy');
     }
 }
 ?>
