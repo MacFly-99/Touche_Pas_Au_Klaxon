@@ -2,11 +2,11 @@
     <div class="col-md-10 col-lg-8">
         <div class="card shadow-sm border-0 rounded-4 mt-4">
             <div class="card-body p-4 p-md-5">
-                <h1 class="mb-4 fw-bold text-primary">Conditions Générales de Vente</h1>
+                <h1 class="mb-4 fw-bold text-primary">Politique de Confidentialité</h1>
 
                 <h4 class="mt-4 fw-bold">1. Objet</h4>
                 <p class="text-muted">
-                    Les présentes CGV régissent l'utilisation du service <strong>Touche Pas Au Klaxon</strong>, une application intranet de gestion de covoiturage.
+                    La présente politique de confidentialité régissent l'utilisation du service <strong>Touche Pas Au Klaxon</strong>, une application intranet de gestion de covoiturage.
                 </p>
 
                 <h4 class="mt-4 fw-bold">2. Accès au service</h4>

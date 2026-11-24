@@ -56,8 +56,8 @@
                         </a>
                     </li>
                     <li class="mb-2">
-                        <a href="<?= BASE_URL ?>/legal/gtc" class="text-white-50 text-decoration-none hover-white">
-                            <i class="bi bi-shield-check me-1"></i>CGV
+                        <a href="<?= BASE_URL ?>/legal/privacy-policy" class="text-white-50 text-decoration-none hover-white">
+                            <i class="bi bi-shield-check me-1"></i>Politique de confidentialité
                         </a>
                     </li>
                     <!-- Lien Support commenté pour le moment (perspectives d'evolution)
