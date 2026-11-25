@@ -6,7 +6,7 @@
 
                 <h4 class="mt-4 fw-bold">1. Objet</h4>
                 <p class="text-muted">
-                    La présente politique de confidentialité régissent l'utilisation du service <strong>Touche Pas Au Klaxon</strong>, une application intranet de gestion de covoiturage.
+                    La présente politique de confidentialité régit l'utilisation du service <strong>Touche Pas Au Klaxon</strong>, une application intranet de gestion de covoiturage.
                 </p>
 
                 <h4 class="mt-4 fw-bold">2. Accès au service</h4>
