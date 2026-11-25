@@ -25,6 +25,8 @@ class Router
         }
         if (!empty($parts[1])) {
             $actionName = $parts[1];
+            
+            $actionName = lcfirst(str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $actionName))));
         }
         $params = array_slice($parts, 2);
 
@@ -45,5 +47,4 @@ class Router
         $controller->$actionName(...$params);
     }
 }
-
 ?>
